@@ -14,7 +14,10 @@ export function getDefaultProgress(): UserProgressRecord {
   };
 }
 
-let cachedProgress: UserProgressRecord | null = null;
+const DEFAULT_SNAPSHOT: UserProgressRecord = Object.freeze(getDefaultProgress());
+
+let currentSnapshot: UserProgressRecord = DEFAULT_SNAPSHOT;
+let isLoadedFromStorage = false;
 let listeners: Array<() => void> = [];
 
 function emitChange() {
@@ -31,20 +34,23 @@ export function subscribeProgress(listener: () => void): () => void {
 }
 
 export function getProgressSnapshot(): UserProgressRecord {
-  if (typeof window === 'undefined') return getDefaultProgress();
-  if (cachedProgress) return cachedProgress;
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      cachedProgress = getDefaultProgress();
-    } else {
-      cachedProgress = { ...getDefaultProgress(), ...JSON.parse(raw) };
+  if (typeof window === 'undefined') return DEFAULT_SNAPSHOT;
+  if (!isLoadedFromStorage) {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        currentSnapshot = { ...DEFAULT_SNAPSHOT, ...JSON.parse(raw) };
+      }
+    } catch (err) {
+      console.error('Failed to read progress from storage:', err);
     }
-  } catch (err) {
-    console.error('Failed to read progress from storage:', err);
-    cachedProgress = getDefaultProgress();
+    isLoadedFromStorage = true;
   }
-  return cachedProgress || getDefaultProgress();
+  return currentSnapshot;
+}
+
+export function getServerSnapshot(): UserProgressRecord {
+  return DEFAULT_SNAPSHOT;
 }
 
 export function loadProgress(): UserProgressRecord {
@@ -52,7 +58,7 @@ export function loadProgress(): UserProgressRecord {
 }
 
 export function saveProgress(progress: UserProgressRecord): void {
-  cachedProgress = progress;
+  currentSnapshot = progress;
   if (typeof window !== 'undefined') {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
@@ -67,7 +73,7 @@ export function useUserProgress(): UserProgressRecord {
   return useSyncExternalStore(
     subscribeProgress,
     getProgressSnapshot,
-    getDefaultProgress
+    getServerSnapshot
   );
 }
 
