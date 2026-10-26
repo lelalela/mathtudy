@@ -12,6 +12,7 @@ import LessonReader from '@/components/curriculum/LessonReader';
 import DrillView from '@/components/drill/DrillView';
 import DiagnosticModal from '@/components/diagnostic/DiagnosticModal';
 import BackupModal from '@/components/stats/BackupModal';
+import PwaInstallButton from '@/components/pwa/PwaInstallButton';
 
 // Icons
 import {
@@ -172,6 +173,9 @@ function HomePageContent() {
               <Compass className="w-4 h-4 text-primary" />
               <span className="hidden md:inline">진단 평가</span>
             </button>
+
+            {/* PWA Install Button */}
+            <PwaInstallButton />
 
             {/* Backup Button (MD3 Standard Icon Button) */}
             <button

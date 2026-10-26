@@ -6,19 +6,35 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: 'Mathtudy',
     description: '기초 산수부터 고급수학까지, 교재형 개념 정리와 무한 알고리즘 연습 드릴 PWA',
     start_url: '/',
+    id: '/',
+    scope: '/',
     display: 'standalone',
-    background_color: '#0a0a0a',
-    theme_color: '#0a0a0a',
+    background_color: '#131318',
+    theme_color: '#131318',
     icons: [
       {
         src: '/icon-192.png',
         sizes: '192x192',
         type: 'image/png',
+        purpose: 'any',
+      },
+      {
+        src: '/icon-192.png',
+        sizes: '192x192',
+        type: 'image/png',
+        purpose: 'maskable',
       },
       {
         src: '/icon-512.png',
         sizes: '512x512',
         type: 'image/png',
+        purpose: 'any',
+      },
+      {
+        src: '/icon-512.png',
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'maskable',
       },
     ],
   };
