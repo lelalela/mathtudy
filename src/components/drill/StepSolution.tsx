@@ -19,55 +19,63 @@ export const StepSolution: React.FC<StepSolutionProps> = ({
   correctAnswerLatex,
 }) => {
   return (
-    <div className={`p-5 rounded-2xl border space-y-5 animate-fade-in ${
-      isCorrect 
-        ? 'bg-emerald-950/20 border-emerald-900/50' 
-        : 'bg-rose-950/20 border-rose-900/50'
-    }`}>
+    <div
+      className={`p-6 rounded-md3-xl border space-y-5 shadow-xs ${
+        isCorrect
+          ? 'bg-surface-container-low border-emerald-500/40'
+          : 'bg-surface-container-low border-error/40'
+      }`}
+    >
       {/* Header Result */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3.5">
         {isCorrect ? (
-          <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-400">
+          <div className="p-2.5 rounded-md3-full bg-emerald-500/20 text-emerald-400 shrink-0">
             <CheckCircle2 className="w-5 h-5" />
           </div>
         ) : (
-          <div className="p-2 rounded-xl bg-rose-500/20 text-rose-400">
+          <div className="p-2.5 rounded-md3-full bg-error-container text-on-error-container shrink-0">
             <AlertCircle className="w-5 h-5" />
           </div>
         )}
         <div>
-          <h4 className={`text-base font-bold ${isCorrect ? 'text-emerald-300' : 'text-rose-300'}`}>
+          <h4
+            className={`text-base font-bold ${
+              isCorrect ? 'text-emerald-300' : 'text-error'
+            }`}
+          >
             {isCorrect ? '정답입니다! 완벽해요.' : '아쉽네요. 단계별 풀이를 확인해 보세요.'}
           </h4>
           {correctAnswerLatex && (
-            <div className="text-xs text-neutral-300 mt-0.5 flex items-center gap-1.5">
+            <div className="text-xs text-on-surface-variant mt-0.5 flex items-center gap-1.5">
               <span>최종 정답:</span>
-              <MathRenderer latex={correctAnswerLatex} className="font-semibold text-white" />
+              <MathRenderer latex={correctAnswerLatex} className="font-semibold text-on-surface" />
             </div>
           )}
         </div>
       </div>
 
       {/* Step by Step Breakdown */}
-      <div className="space-y-3 border-t border-neutral-800 pt-3">
-        <span className="text-xs font-semibold tracking-wider text-neutral-400 uppercase">
+      <div className="space-y-3 border-t border-outline-variant/30 pt-4">
+        <span className="text-xs font-semibold tracking-wider text-on-surface-variant uppercase font-mono">
           단계별 수학적 전개 과정 (Step-by-Step)
         </span>
         <div className="space-y-3">
           {steps.map((step) => (
             <div
               key={step.stepNumber}
-              className="p-3.5 bg-neutral-900/90 border border-neutral-800 rounded-xl space-y-2"
+              className="p-4 bg-surface-container border border-outline-variant/40 rounded-md3-lg space-y-2.5"
             >
-              <div className="flex items-center gap-2">
-                <span className="w-5 h-5 rounded-full bg-indigo-600/30 border border-indigo-500/40 text-indigo-300 font-mono text-[11px] font-bold flex items-center justify-center shrink-0">
+              <div className="flex items-center gap-2.5">
+                <span className="w-5 h-5 rounded-md3-full bg-primary-container text-on-primary-container font-mono text-[11px] font-bold flex items-center justify-center shrink-0">
                   {step.stepNumber}
                 </span>
-                <span className="text-xs font-semibold text-neutral-200">{step.title}</span>
+                <span className="text-xs font-semibold text-on-surface">{step.title}</span>
               </div>
-              <p className="text-xs text-neutral-300 pl-7 leading-relaxed">{step.explanation}</p>
+              <p className="text-xs text-on-surface-variant pl-7.5 leading-relaxed">
+                {step.explanation}
+              </p>
               {step.mathLatex && (
-                <div className="ml-7 p-2.5 bg-neutral-950/80 border border-neutral-850 rounded-lg text-center overflow-x-auto">
+                <div className="ml-7.5 p-3 bg-surface-container-lowest border border-outline-variant/40 rounded-md3-md text-center overflow-x-auto shadow-inner">
                   <MathRenderer latex={step.mathLatex} displayMode />
                 </div>
               )}
@@ -78,8 +86,8 @@ export const StepSolution: React.FC<StepSolutionProps> = ({
 
       {/* Concept Summary Note */}
       {conceptSummary && (
-        <div className="p-3 bg-neutral-900/60 border border-neutral-800 rounded-xl text-xs text-neutral-400 flex items-start gap-2">
-          <span className="font-semibold text-indigo-400 shrink-0">📌 단원 핵심:</span>
+        <div className="p-3.5 bg-surface-container-high border border-outline-variant/40 rounded-md3-md text-xs text-on-surface-variant flex items-start gap-2 leading-relaxed">
+          <span className="font-semibold text-primary shrink-0">📌 단원 핵심:</span>
           <span>{conceptSummary}</span>
         </div>
       )}

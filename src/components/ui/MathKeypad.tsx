@@ -39,17 +39,17 @@ export const MathKeypad: React.FC<MathKeypadProps> = ({
   ];
 
   return (
-    <div className="w-full max-w-md mx-auto p-3 bg-neutral-900/90 border border-neutral-800 rounded-2xl shadow-xl backdrop-blur-md">
+    <div className="w-full max-w-md mx-auto p-4 bg-surface-container border border-outline-variant/60 rounded-md3-xl shadow-sm">
       {/* Display preview */}
-      <div className="mb-3 px-4 py-2.5 bg-neutral-950 border border-neutral-800 rounded-xl flex items-center justify-between min-h-[50px]">
-        <span className="text-xs font-mono text-neutral-400 select-none">입력값:</span>
-        <span className="text-xl font-mono font-semibold text-neutral-100 tracking-wider">
-          {value || <span className="text-neutral-600 font-normal">터치 또는 키보드로 입력</span>}
+      <div className="mb-3.5 px-4 py-3 bg-surface-container-lowest border border-outline-variant/50 rounded-md3-md flex items-center justify-between min-h-[52px]">
+        <span className="text-xs font-mono text-on-surface-variant select-none">입력값:</span>
+        <span className="text-xl font-mono font-semibold text-on-surface tracking-wider">
+          {value || <span className="text-on-surface-variant/50 font-normal text-sm">터치 또는 키보드로 입력</span>}
         </span>
       </div>
 
       {/* Keypad Grid */}
-      <div className="grid grid-cols-5 gap-1.5">
+      <div className="grid grid-cols-5 gap-2">
         {keys.map((row) =>
           row.map((k) => {
             if (k === '⌫') {
@@ -59,7 +59,7 @@ export const MathKeypad: React.FC<MathKeypadProps> = ({
                   type="button"
                   onClick={handleBackspace}
                   disabled={disabled}
-                  className="h-11 rounded-lg bg-neutral-800/80 hover:bg-neutral-700 active:scale-95 text-neutral-300 flex items-center justify-center transition-all disabled:opacity-40"
+                  className="h-12 rounded-md3-md bg-surface-container-high hover:bg-surface-container-highest active:scale-95 text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-all md3-button-motion disabled:opacity-40"
                   aria-label="지우기"
                 >
                   <Delete className="w-4 h-4" />
@@ -73,7 +73,7 @@ export const MathKeypad: React.FC<MathKeypadProps> = ({
                   type="button"
                   onClick={handleClear}
                   disabled={disabled}
-                  className="h-11 rounded-lg bg-neutral-800/80 hover:bg-rose-950 hover:text-rose-400 active:scale-95 text-neutral-400 font-medium text-xs flex items-center justify-center transition-all disabled:opacity-40"
+                  className="h-12 rounded-md3-md bg-surface-container-high hover:bg-error-container hover:text-on-error-container active:scale-95 text-on-surface-variant font-medium text-xs flex items-center justify-center transition-all md3-button-motion disabled:opacity-40"
                 >
                   CLR
                 </button>
@@ -87,10 +87,10 @@ export const MathKeypad: React.FC<MathKeypadProps> = ({
                 type="button"
                 onClick={() => handleKeyClick(k)}
                 disabled={disabled}
-                className={`h-11 rounded-lg font-mono text-base font-medium flex items-center justify-center transition-all active:scale-95 disabled:opacity-40 ${
+                className={`h-12 rounded-md3-md font-mono text-base font-medium flex items-center justify-center transition-all active:scale-95 md3-button-motion disabled:opacity-40 ${
                   isOp
-                    ? 'bg-neutral-800 hover:bg-neutral-700 text-amber-300'
-                    : 'bg-neutral-800/50 hover:bg-neutral-700/80 text-neutral-200'
+                    ? 'bg-secondary-container hover:brightness-110 text-on-secondary-container font-semibold'
+                    : 'bg-surface-container-high hover:bg-surface-container-highest text-on-surface'
                 }`}
               >
                 {k}
@@ -100,12 +100,12 @@ export const MathKeypad: React.FC<MathKeypadProps> = ({
         )}
       </div>
 
-      {/* Submit Button */}
+      {/* MD3 Filled Button */}
       <button
         type="button"
         onClick={onSubmit}
         disabled={disabled || !value.trim()}
-        className="w-full mt-2.5 py-3 bg-indigo-600 hover:bg-indigo-500 disabled:bg-neutral-800 disabled:text-neutral-500 text-white font-medium text-sm rounded-xl transition-all flex items-center justify-center gap-2 active:scale-[0.99] shadow-lg shadow-indigo-950/30"
+        className="w-full mt-3.5 py-3.5 bg-primary hover:brightness-110 disabled:bg-surface-container-high disabled:text-on-surface-variant/40 text-on-primary font-medium text-sm rounded-md3-full transition-all flex items-center justify-center gap-2 active:scale-[0.98] shadow-xs"
       >
         <span>정답 제출하기</span>
         <CornerDownLeft className="w-4 h-4" />

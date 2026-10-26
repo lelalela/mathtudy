@@ -87,27 +87,28 @@ export const DrillView: React.FC<DrillViewProps> = ({
 
   if (!generatorItem || !problem) {
     return (
-      <div className="p-8 text-center text-neutral-400">
+      <div className="p-8 text-center text-on-surface-variant">
         문제를 생성하는 중 오류가 발생했습니다.
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-6 animate-fade-in pb-16">
+    <div className="w-full max-w-2xl mx-auto space-y-6 pb-16">
       {/* Navigation & Controls Bar */}
-      <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
+      <div className="flex items-center justify-between border-b border-outline-variant/30 pb-3">
+        {/* MD3 Text Button */}
         <button
           onClick={onBack}
-          className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-neutral-200 transition-colors"
+          className="flex items-center gap-1.5 text-xs font-medium text-on-surface-variant hover:text-on-surface px-3 py-1.5 rounded-md3-full hover:bg-surface-container-high transition-all"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>단원 목록</span>
         </button>
 
-        {/* Session Score */}
+        {/* MD3 Session Score Chip */}
         <div className="flex items-center gap-2">
-          <span className="text-xs font-mono text-neutral-400">
+          <span className="text-xs font-mono px-3 py-1 rounded-md3-full bg-surface-container-high border border-outline-variant/40 text-on-surface-variant font-medium">
             세션 성적: <span className="text-emerald-400 font-bold">{correctCountInSession}</span> / {solvedCountInSession}
           </span>
         </div>
@@ -116,18 +117,18 @@ export const DrillView: React.FC<DrillViewProps> = ({
       {/* Problem Header */}
       <div className="flex items-center justify-between">
         <div>
-          <span className="text-xs font-mono text-indigo-400">{problem.unit}</span>
-          <h2 className="text-lg font-bold text-neutral-100">{problem.title}</h2>
+          <span className="text-xs font-mono font-medium text-primary">{problem.unit}</span>
+          <h2 className="text-lg font-bold text-on-surface">{problem.title}</h2>
         </div>
 
-        {/* Input Mode Selector */}
-        <div className="flex items-center bg-neutral-900 border border-neutral-800 rounded-xl p-1">
+        {/* MD3 Segmented Button for Input Mode */}
+        <div className="flex items-center bg-surface-container border border-outline-variant/60 rounded-md3-full p-1 shadow-xs">
           <button
             onClick={() => setInputMode('multiple')}
-            className={`px-2.5 py-1 rounded-lg text-xs font-medium flex items-center gap-1 transition-all ${
+            className={`px-3 py-1 rounded-md3-full text-xs font-medium flex items-center gap-1.5 transition-all md3-button-motion ${
               inputMode === 'multiple'
-                ? 'bg-neutral-800 text-neutral-100 shadow-sm'
-                : 'text-neutral-500 hover:text-neutral-300'
+                ? 'bg-secondary-container text-on-secondary-container shadow-xs font-semibold'
+                : 'text-on-surface-variant hover:text-on-surface'
             }`}
           >
             <LayoutGrid className="w-3.5 h-3.5" />
@@ -135,10 +136,10 @@ export const DrillView: React.FC<DrillViewProps> = ({
           </button>
           <button
             onClick={() => setInputMode('keypad')}
-            className={`px-2.5 py-1 rounded-lg text-xs font-medium flex items-center gap-1 transition-all ${
+            className={`px-3 py-1 rounded-md3-full text-xs font-medium flex items-center gap-1.5 transition-all md3-button-motion ${
               inputMode === 'keypad'
-                ? 'bg-neutral-800 text-neutral-100 shadow-sm'
-                : 'text-neutral-500 hover:text-neutral-300'
+                ? 'bg-secondary-container text-on-secondary-container shadow-xs font-semibold'
+                : 'text-on-surface-variant hover:text-on-surface'
             }`}
           >
             <Keyboard className="w-3.5 h-3.5" />
@@ -147,19 +148,19 @@ export const DrillView: React.FC<DrillViewProps> = ({
         </div>
       </div>
 
-      {/* Question Card */}
-      <div className="p-6 bg-neutral-900/90 border border-neutral-800 rounded-3xl space-y-4 shadow-xl text-center relative overflow-hidden">
-        <p className="text-sm text-neutral-300">{problem.questionText}</p>
-        <div className="py-4 px-2 bg-neutral-950/80 border border-neutral-850 rounded-2xl">
-          <MathRenderer latex={problem.questionLatex} displayMode className="text-xl sm:text-2xl text-white" />
+      {/* Question Card (MD3 Elevated Card) */}
+      <div className="p-6 sm:p-7 bg-surface-container-low border border-outline-variant/50 rounded-md3-xl space-y-4 shadow-sm text-center relative overflow-hidden">
+        <p className="text-sm text-on-surface-variant">{problem.questionText}</p>
+        <div className="py-5 px-3 bg-surface-container-lowest border border-outline-variant/50 rounded-md3-lg shadow-inner">
+          <MathRenderer latex={problem.questionLatex} displayMode className="text-xl sm:text-2xl text-on-surface" />
         </div>
 
-        {/* Hint accordion button */}
+        {/* Hint toggle button */}
         {!isSubmitted && (
           <div className="pt-2 flex justify-center">
             <button
               onClick={() => setShowHints(!showHints)}
-              className="text-xs text-neutral-400 hover:text-amber-400 flex items-center gap-1 transition-colors"
+              className="text-xs text-on-surface-variant hover:text-amber-300 px-3 py-1 rounded-md3-full hover:bg-surface-container flex items-center gap-1.5 transition-colors"
             >
               <Lightbulb className="w-3.5 h-3.5 text-amber-400" />
               <span>{showHints ? '힌트 숨기기' : '힌트 보기'}</span>
@@ -168,7 +169,7 @@ export const DrillView: React.FC<DrillViewProps> = ({
         )}
 
         {showHints && !isSubmitted && (
-          <div className="p-3 bg-amber-950/20 border border-amber-900/40 rounded-xl text-xs text-amber-200 text-left space-y-1">
+          <div className="p-4 bg-tertiary-container/30 border border-outline-variant/50 rounded-md3-md text-xs text-on-tertiary-container text-left space-y-1.5 leading-relaxed">
             {problem.hints.map((hint, idx) => (
               <p key={idx}>💡 {hint}</p>
             ))}
@@ -213,10 +214,10 @@ export const DrillView: React.FC<DrillViewProps> = ({
             correctAnswerLatex={problem.answerDisplayLatex}
           />
 
-          {/* Next Problem Button */}
+          {/* MD3 Filled Button: Next Problem */}
           <button
             onClick={loadNextProblem}
-            className="w-full py-3.5 bg-neutral-100 hover:bg-white text-neutral-950 font-semibold text-sm rounded-2xl transition-all flex items-center justify-center gap-2 shadow-xl active:scale-[0.99]"
+            className="w-full py-3.5 bg-primary text-on-primary font-semibold text-sm rounded-md3-full hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-xs"
           >
             <RefreshCw className="w-4 h-4" />
             <span>다음 문제 생성하기 (새로운 난수)</span>

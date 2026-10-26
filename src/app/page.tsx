@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { Suspense, useMemo } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useUserProgress } from '@/lib/storage';
 import { TopicConcept, CURRICULUM_TOPICS } from '@/lib/curriculum-data';
 import { GENERATORS } from '@/lib/generators';
@@ -24,34 +25,92 @@ import {
   Sigma,
 } from 'lucide-react';
 
-export default function HomePage() {
+function HomePageContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const progress = useUserProgress();
-  const [view, setView] = useState<'roadmap' | 'lesson' | 'drill' | 'stats'>('roadmap');
-  const [currentLesson, setCurrentLesson] = useState<TopicConcept | null>(null);
-  const [currentGeneratorId, setCurrentGeneratorId] = useState<string>('fractions');
 
-  // Modals
-  const [isDiagnosticOpen, setIsDiagnosticOpen] = useState(false);
-  const [isBackupOpen, setIsBackupOpen] = useState(false);
+  // Extract navigation state from URL query parameters (Supports browser Back / Forward)
+  const tabParam = searchParams.get('tab') || 'roadmap';
+  const idParam = searchParams.get('id');
+  const modalParam = searchParams.get('modal');
+
+  const view: 'roadmap' | 'lesson' | 'drill' | 'stats' = 
+    ['roadmap', 'lesson', 'drill', 'stats'].includes(tabParam)
+      ? (tabParam as 'roadmap' | 'lesson' | 'drill' | 'stats')
+      : 'roadmap';
+
+  // Active Lesson resolved from URL id or fallback
+  const currentLesson: TopicConcept | null = useMemo(() => {
+    if (view === 'lesson') {
+      return CURRICULUM_TOPICS.find((t) => t.id === idParam) || CURRICULUM_TOPICS[0];
+    }
+    return null;
+  }, [view, idParam]);
+
+  // Active Generator for Drill
+  const currentGeneratorId: string = useMemo(() => {
+    if (idParam && GENERATORS.some((g) => g.id === idParam)) {
+      return idParam;
+    }
+    return 'fractions';
+  }, [idParam]);
+
+  // Modal states synchronized with URL
+  const isDiagnosticOpen = modalParam === 'diagnostic';
+  const isBackupOpen = modalParam === 'backup';
+
+  // Navigation helpers that push browser history
+  const navigateTo = (tab: 'roadmap' | 'lesson' | 'drill' | 'stats', id?: string) => {
+    const params = new URLSearchParams();
+    if (tab !== 'roadmap') {
+      params.set('tab', tab);
+    }
+    if (id) {
+      params.set('id', id);
+    }
+    const qs = params.toString();
+    router.push(qs ? `/?${qs}` : '/');
+  };
+
+  const handleBack = () => {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      router.back();
+    } else {
+      navigateTo('roadmap');
+    }
+  };
 
   const handleSelectLesson = (lesson: TopicConcept) => {
-    setCurrentLesson(lesson);
-    setView('lesson');
+    navigateTo('lesson', lesson.id);
   };
 
   const handleStartDrill = (generatorId: string) => {
-    setCurrentGeneratorId(generatorId);
-    setView('drill');
+    navigateTo('drill', generatorId);
+  };
+
+  const openModal = (modalName: 'diagnostic' | 'backup') => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('modal', modalName);
+    router.push(`/?${params.toString()}`);
+  };
+
+  const closeModal = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('modal');
+    const qs = params.toString();
+    router.push(qs ? `/?${qs}` : '/');
   };
 
   const handleDiagnosticComplete = (recommendedTopicId: string) => {
+    closeModal();
     const foundTopic = CURRICULUM_TOPICS.find(
       (t) => t.generatorId === recommendedTopicId || t.id === recommendedTopicId
     );
     if (foundTopic) {
       handleSelectLesson(foundTopic);
     } else {
-      setView('roadmap');
+      navigateTo('roadmap');
     }
   };
 
@@ -61,58 +120,63 @@ export default function HomePage() {
       : 0;
 
   return (
-    <div className="min-h-screen flex flex-col bg-neutral-950 text-neutral-100">
-      {/* Top Navigation Bar */}
-      <header className="sticky top-0 z-40 w-full border-b border-neutral-800/80 bg-neutral-950/80 backdrop-blur-md">
-        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-          {/* Logo & Brand */}
+    <div className="min-h-screen flex flex-col bg-surface text-on-surface">
+      {/* MD3 Top App Bar */}
+      <header className="sticky top-0 z-40 w-full border-b border-outline-variant/30 bg-surface-container/90 backdrop-blur-md transition-colors">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+          {/* Logo & Brand Identity */}
           <div
-            onClick={() => setView('roadmap')}
-            className="flex items-center gap-2.5 cursor-pointer group"
+            onClick={() => navigateTo('roadmap')}
+            className="flex items-center gap-3 cursor-pointer group select-none"
           >
-            <div className="w-8 h-8 rounded-xl bg-indigo-600/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400 group-hover:scale-105 transition-all">
-              <Sigma className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-md3-lg bg-primary-container text-on-primary-container flex items-center justify-center group-hover:scale-105 transition-transform duration-200 shadow-xs">
+              <Sigma className="w-5 h-5 stroke-[2.2]" />
             </div>
             <div>
-              <span className="font-bold text-base tracking-tight text-white group-hover:text-indigo-300 transition-colors">
-                Mathtudy
-              </span>
-              <span className="text-[10px] text-neutral-500 block leading-none font-mono">
-                Adult Math Studio
+              <div className="flex items-center gap-1.5">
+                <span className="font-semibold text-base tracking-tight text-on-surface group-hover:text-primary transition-colors">
+                  Mathtudy
+                </span>
+                <span className="text-[10px] font-medium px-1.5 py-0.2 rounded-md3-xs bg-secondary-container text-on-secondary-container font-mono">
+                  M3
+                </span>
+              </div>
+              <span className="text-[11px] text-on-surface-variant block leading-tight font-medium">
+                성인을 위한 수학 독학 스튜디오
               </span>
             </div>
           </div>
 
-          {/* Quick Metrics & Actions */}
-          <div className="flex items-center gap-3">
-            {/* Streak */}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-900 border border-neutral-800 text-xs text-amber-300 font-mono">
+          {/* Quick Metrics & Actions (MD3 Chips & Tonal Buttons) */}
+          <div className="flex items-center gap-2.5">
+            {/* Streak Chip */}
+            <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-md3-full bg-surface-container-high border border-outline-variant/50 text-xs font-medium text-amber-300 font-mono">
               <Flame className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
               <span>{progress.streak}일 연속</span>
             </div>
 
-            {/* Solved Stat */}
-            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-900 border border-neutral-800 text-xs text-neutral-300 font-mono">
+            {/* Solved Stat Chip */}
+            <div className="hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-md3-full bg-surface-container-high border border-outline-variant/50 text-xs text-on-surface font-mono font-medium">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
               <span>
                 {progress.totalSolved}문제 ({accuracy}%)
               </span>
             </div>
 
-            {/* Diagnostic Button */}
+            {/* Diagnostic Button (MD3 Filled Tonal Button) */}
             <button
-              onClick={() => setIsDiagnosticOpen(true)}
-              className="px-3 py-1.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-xs text-neutral-300 hover:text-white flex items-center gap-1.5 transition-all"
+              onClick={() => openModal('diagnostic')}
+              className="h-9 px-3.5 rounded-md3-full bg-secondary-container text-on-secondary-container hover:brightness-110 active:scale-95 transition-all text-xs font-medium flex items-center gap-1.5 shadow-xs"
               title="진단 평가 다시보기"
             >
-              <Compass className="w-3.5 h-3.5 text-indigo-400" />
+              <Compass className="w-4 h-4 text-primary" />
               <span className="hidden md:inline">진단 평가</span>
             </button>
 
-            {/* Backup Button */}
+            {/* Backup Button (MD3 Standard Icon Button) */}
             <button
-              onClick={() => setIsBackupOpen(true)}
-              className="p-2 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-neutral-400 hover:text-neutral-200 transition-all"
+              onClick={() => openModal('backup')}
+              className="h-9 w-9 rounded-md3-full flex items-center justify-center bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant/50 text-on-surface-variant hover:text-on-surface active:scale-95 transition-all"
               title="로컬 데이터 백업 / 복원"
               aria-label="데이터 백업"
             >
@@ -121,14 +185,14 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Sub Navigation Tabs */}
-        <div className="max-w-5xl mx-auto px-4 flex items-center gap-1 overflow-x-auto border-t border-neutral-900">
+        {/* MD3 Navigation Bar / Tabs with Active Indicator Pill */}
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 flex items-center gap-2 overflow-x-auto py-1 border-t border-outline-variant/20">
           <button
-            onClick={() => setView('roadmap')}
-            className={`px-4 py-2.5 text-xs font-medium border-b-2 transition-all flex items-center gap-1.5 shrink-0 ${
+            onClick={() => navigateTo('roadmap')}
+            className={`px-4 py-1.5 rounded-md3-full text-xs font-medium transition-all flex items-center gap-2 shrink-0 md3-button-motion ${
               view === 'roadmap'
-                ? 'border-indigo-500 text-indigo-400'
-                : 'border-transparent text-neutral-400 hover:text-neutral-200'
+                ? 'bg-secondary-container text-on-secondary-container shadow-xs'
+                : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/60'
             }`}
           >
             <BookOpen className="w-3.5 h-3.5" />
@@ -136,11 +200,11 @@ export default function HomePage() {
           </button>
 
           <button
-            onClick={() => setView('drill')}
-            className={`px-4 py-2.5 text-xs font-medium border-b-2 transition-all flex items-center gap-1.5 shrink-0 ${
+            onClick={() => navigateTo('drill', currentGeneratorId)}
+            className={`px-4 py-1.5 rounded-md3-full text-xs font-medium transition-all flex items-center gap-2 shrink-0 md3-button-motion ${
               view === 'drill'
-                ? 'border-indigo-500 text-indigo-400'
-                : 'border-transparent text-neutral-400 hover:text-neutral-200'
+                ? 'bg-secondary-container text-on-secondary-container shadow-xs'
+                : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/60'
             }`}
           >
             <Dumbbell className="w-3.5 h-3.5" />
@@ -148,11 +212,11 @@ export default function HomePage() {
           </button>
 
           <button
-            onClick={() => setView('stats')}
-            className={`px-4 py-2.5 text-xs font-medium border-b-2 transition-all flex items-center gap-1.5 shrink-0 ${
+            onClick={() => navigateTo('stats')}
+            className={`px-4 py-1.5 rounded-md3-full text-xs font-medium transition-all flex items-center gap-2 shrink-0 md3-button-motion ${
               view === 'stats'
-                ? 'border-indigo-500 text-indigo-400'
-                : 'border-transparent text-neutral-400 hover:text-neutral-200'
+                ? 'bg-secondary-container text-on-secondary-container shadow-xs'
+                : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/60'
             }`}
           >
             <BarChart3 className="w-3.5 h-3.5" />
@@ -168,106 +232,111 @@ export default function HomePage() {
             progress={progress}
             onSelectLesson={handleSelectLesson}
             onSelectDrill={handleStartDrill}
-            onOpenDiagnostic={() => setIsDiagnosticOpen(true)}
+            onOpenDiagnostic={() => openModal('diagnostic')}
           />
         )}
 
         {view === 'lesson' && currentLesson && (
           <LessonReader
             lesson={currentLesson}
-            onBack={() => setView('roadmap')}
+            onBack={handleBack}
             onStartDrill={handleStartDrill}
           />
         )}
 
         {view === 'drill' && (
           <div className="space-y-6">
-            {/* Generator Switcher Pill Menu */}
+            {/* MD3 Filter Chips for Generator Selection */}
             <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-              {GENERATORS.map((gen) => (
-                <button
-                  key={gen.id}
-                  onClick={() => setCurrentGeneratorId(gen.id)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium shrink-0 transition-all ${
-                    currentGeneratorId === gen.id
-                      ? 'bg-indigo-600 text-white shadow-md'
-                      : 'bg-neutral-900 hover:bg-neutral-800 text-neutral-400 border border-neutral-800'
-                  }`}
-                >
-                  {gen.name}
-                </button>
-              ))}
+              {GENERATORS.map((gen) => {
+                const isActive = currentGeneratorId === gen.id;
+                return (
+                  <button
+                    key={gen.id}
+                    onClick={() => navigateTo('drill', gen.id)}
+                    className={`h-8 px-4 rounded-md3-full text-xs font-medium shrink-0 transition-all md3-button-motion ${
+                      isActive
+                        ? 'bg-primary-container text-on-primary-container font-semibold shadow-xs'
+                        : 'bg-surface-container-low hover:bg-surface-container border border-outline-variant/60 text-on-surface-variant hover:text-on-surface'
+                    }`}
+                  >
+                    {gen.name}
+                  </button>
+                );
+              })}
             </div>
 
             <DrillView
               key={currentGeneratorId}
               generatorId={currentGeneratorId}
-              onBack={() => setView('roadmap')}
+              onBack={handleBack}
               onRefreshProgress={() => {}}
             />
           </div>
         )}
 
         {view === 'stats' && (
-          <div className="w-full max-w-3xl mx-auto space-y-6 animate-fade-in pb-16">
+          <div className="w-full max-w-3xl mx-auto space-y-6 pb-16">
+            {/* Header Title */}
             <div className="space-y-1">
-              <h2 className="text-2xl font-bold tracking-tight text-neutral-100">내 학습 분석</h2>
-              <p className="text-xs text-neutral-400">
+              <h2 className="text-2xl font-bold tracking-tight text-on-surface">내 학습 분석</h2>
+              <p className="text-xs text-on-surface-variant">
                 로컬에 안전하게 기록된 나의 수학 공부 데이터입니다.
               </p>
             </div>
 
-            {/* Overview Metric Cards */}
+            {/* Overview Metric Cards (MD3 Elevated Tonal Cards) */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="p-4 bg-neutral-900 border border-neutral-800 rounded-2xl space-y-1">
-                <span className="text-xs text-neutral-500">총 푼 문제</span>
-                <p className="text-2xl font-mono font-bold text-neutral-100">
+              <div className="p-5 bg-surface-container-low border border-outline-variant/40 rounded-md3-lg space-y-1 md3-card-hover">
+                <span className="text-xs text-on-surface-variant font-medium">총 푼 문제</span>
+                <p className="text-2xl font-mono font-bold text-on-surface">
                   {progress.totalSolved}
                 </p>
               </div>
-              <div className="p-4 bg-neutral-900 border border-neutral-800 rounded-2xl space-y-1">
-                <span className="text-xs text-neutral-500">정답률</span>
+              <div className="p-5 bg-surface-container-low border border-outline-variant/40 rounded-md3-lg space-y-1 md3-card-hover">
+                <span className="text-xs text-on-surface-variant font-medium">정답률</span>
                 <p className="text-2xl font-mono font-bold text-emerald-400">{accuracy}%</p>
               </div>
-              <div className="p-4 bg-neutral-900 border border-neutral-800 rounded-2xl space-y-1">
-                <span className="text-xs text-neutral-500">연속 학습일</span>
+              <div className="p-5 bg-surface-container-low border border-outline-variant/40 rounded-md3-lg space-y-1 md3-card-hover">
+                <span className="text-xs text-on-surface-variant font-medium">연속 학습일</span>
                 <p className="text-2xl font-mono font-bold text-amber-400">{progress.streak}일</p>
               </div>
-              <div className="p-4 bg-neutral-900 border border-neutral-800 rounded-2xl space-y-1">
-                <span className="text-xs text-neutral-500">진단 평가 점수</span>
-                <p className="text-2xl font-mono font-bold text-indigo-400">
+              <div className="p-5 bg-surface-container-low border border-outline-variant/40 rounded-md3-lg space-y-1 md3-card-hover">
+                <span className="text-xs text-on-surface-variant font-medium">진단 평가 점수</span>
+                <p className="text-2xl font-mono font-bold text-primary">
                   {progress.diagnosticScore ? `${progress.diagnosticScore.score}점` : '미응시'}
                 </p>
               </div>
             </div>
 
-            {/* Unit by Unit Mastery Table */}
-            <div className="p-5 bg-neutral-900 border border-neutral-800 rounded-2xl space-y-4">
-              <h3 className="text-base font-semibold text-neutral-200">단원별 마스터리 현황</h3>
-              <div className="divide-y divide-neutral-800/80">
+            {/* Unit by Unit Mastery Table (MD3 Card Container) */}
+            <div className="p-6 bg-surface-container-low border border-outline-variant/50 rounded-md3-xl space-y-4">
+              <h3 className="text-base font-semibold text-on-surface">단원별 마스터리 현황</h3>
+              <div className="divide-y divide-outline-variant/30">
                 {GENERATORS.map((gen) => {
                   const s = progress.topicMastery[gen.id] || { solved: 0, correct: 0, level: 0 };
                   const acc = s.solved > 0 ? Math.round((s.correct / s.solved) * 100) : 0;
 
                   return (
-                    <div key={gen.id} className="py-3 flex items-center justify-between gap-4">
+                    <div key={gen.id} className="py-3.5 flex items-center justify-between gap-4">
                       <div className="space-y-0.5">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-neutral-200">{gen.name}</span>
-                          <span className="text-[11px] font-mono text-neutral-500">({gen.unit})</span>
+                          <span className="text-sm font-medium text-on-surface">{gen.name}</span>
+                          <span className="text-[11px] font-mono text-on-surface-variant">({gen.unit})</span>
                         </div>
-                        <span className="text-xs text-neutral-400">
+                        <span className="text-xs text-on-surface-variant">
                           풀이: {s.solved}문제 · 정답률: {acc}%
                         </span>
                       </div>
 
                       <div className="flex items-center gap-3">
-                        <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-neutral-800 text-neutral-300">
+                        <span className="text-xs font-mono px-2.5 py-0.5 rounded-md3-full bg-surface-container-highest text-on-surface font-medium">
                           Lv.{s.level}
                         </span>
+                        {/* MD3 Filled Tonal Button */}
                         <button
                           onClick={() => handleStartDrill(gen.id)}
-                          className="px-3 py-1.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-xs font-medium text-neutral-200 transition-colors"
+                          className="px-4 py-1.5 rounded-md3-full bg-secondary-container hover:brightness-110 text-xs font-medium text-on-secondary-container transition-all active:scale-95"
                         >
                           드릴 풀기
                         </button>
@@ -278,15 +347,15 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Backup CTA */}
-            <div className="p-5 bg-neutral-900/60 border border-neutral-800 rounded-2xl flex items-center justify-between">
+            {/* Backup CTA (MD3 Filled Card) */}
+            <div className="p-6 bg-surface-container border border-outline-variant/40 rounded-md3-xl flex items-center justify-between">
               <div>
-                <h4 className="text-sm font-semibold text-neutral-200">데이터 백업 및 이전</h4>
-                <p className="text-xs text-neutral-400">기록을 JSON 파일로 내보내거나 복원할 수 있습니다.</p>
+                <h4 className="text-sm font-semibold text-on-surface">데이터 백업 및 이전</h4>
+                <p className="text-xs text-on-surface-variant mt-0.5">기록을 JSON 파일로 내보내거나 안전하게 복원할 수 있습니다.</p>
               </div>
               <button
-                onClick={() => setIsBackupOpen(true)}
-                className="px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-xs font-medium text-neutral-200 transition-colors"
+                onClick={() => openModal('backup')}
+                className="px-5 py-2 rounded-md3-full bg-secondary-container hover:brightness-110 text-xs font-medium text-on-secondary-container transition-all active:scale-95"
               >
                 관리하기
               </button>
@@ -298,15 +367,23 @@ export default function HomePage() {
       {/* Modals */}
       <DiagnosticModal
         isOpen={isDiagnosticOpen}
-        onClose={() => setIsDiagnosticOpen(false)}
+        onClose={closeModal}
         onComplete={handleDiagnosticComplete}
       />
 
       <BackupModal
         isOpen={isBackupOpen}
-        onClose={() => setIsBackupOpen(false)}
+        onClose={closeModal}
         onRefresh={() => {}}
       />
     </div>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-surface" />}>
+      <HomePageContent />
+    </Suspense>
   );
 }

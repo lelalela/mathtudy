@@ -89,11 +89,13 @@ const DiagnosticContent: React.FC<{
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-      <div className="w-full max-w-lg bg-neutral-900 border border-neutral-800 rounded-3xl p-6 shadow-2xl relative space-y-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+      {/* MD3 Dialog Container (28px corner radius) */}
+      <div className="w-full max-w-lg bg-surface-container-high border border-outline-variant/60 rounded-md3-xl p-6 sm:p-7 shadow-xl relative space-y-6">
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 text-neutral-400 hover:text-neutral-200 transition-colors"
+          className="absolute top-5 right-5 h-9 w-9 rounded-md3-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all"
+          aria-label="닫기"
         >
           <X className="w-5 h-5" />
         </button>
@@ -101,27 +103,27 @@ const DiagnosticContent: React.FC<{
         {!isFinished ? (
           <div className="space-y-6">
             {/* Header */}
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 text-indigo-400 text-xs font-semibold">
+            <div className="space-y-1 pr-8">
+              <div className="flex items-center gap-2 text-primary text-xs font-semibold">
                 <Compass className="w-4 h-4" />
                 <span>성인 맞춤 수학 진단 평가 ({currentIndex + 1} / {questions.length})</span>
               </div>
-              <h3 className="text-xl font-bold text-neutral-100">{currentProb.unit}</h3>
+              <h3 className="text-xl font-bold text-on-surface">{currentProb.unit}</h3>
             </div>
 
-            {/* Progress bar */}
-            <div className="w-full h-1.5 bg-neutral-800 rounded-full overflow-hidden">
+            {/* MD3 Linear Progress Bar */}
+            <div className="w-full h-1 bg-surface-container-highest rounded-md3-full overflow-hidden">
               <div
-                className="h-full bg-indigo-500 transition-all duration-300"
+                className="h-full bg-primary transition-all duration-300"
                 style={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }}
               />
             </div>
 
             {/* Question Card */}
-            <div className="p-5 bg-neutral-950/80 border border-neutral-800 rounded-2xl text-center space-y-3">
-              <p className="text-xs text-neutral-400">{currentProb.questionText}</p>
+            <div className="p-5 bg-surface-container-lowest border border-outline-variant/40 rounded-md3-lg text-center space-y-3 shadow-inner">
+              <p className="text-xs text-on-surface-variant">{currentProb.questionText}</p>
               <div className="py-2">
-                <MathRenderer latex={currentProb.questionLatex} displayMode className="text-xl" />
+                <MathRenderer latex={currentProb.questionLatex} displayMode className="text-xl text-on-surface" />
               </div>
             </div>
 
@@ -134,48 +136,49 @@ const DiagnosticContent: React.FC<{
               correctAnswer={currentProb.correctAnswer}
             />
 
-            {/* Next Button */}
+            {/* MD3 Filled Button */}
             <button
               onClick={handleNext}
               disabled={!selectedChoices[currentIndex]}
-              className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 disabled:bg-neutral-800 disabled:text-neutral-500 text-white font-medium text-sm rounded-xl transition-all flex items-center justify-center gap-2 active:scale-95 shadow-lg shadow-indigo-950/40"
+              className="w-full py-3.5 bg-primary hover:brightness-110 disabled:bg-surface-container-highest disabled:text-on-surface-variant/40 text-on-primary font-medium text-sm rounded-md3-full transition-all flex items-center justify-center gap-2 active:scale-95 shadow-xs"
             >
               <span>{currentIndex === questions.length - 1 ? '진단 완료하기' : '다음 문제'}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         ) : (
-          <div className="text-center space-y-6 py-4">
-            <div className="w-14 h-14 rounded-2xl bg-indigo-600/20 text-indigo-400 mx-auto flex items-center justify-center">
+          <div className="text-center space-y-6 py-3">
+            <div className="w-14 h-14 rounded-md3-xl bg-primary-container text-on-primary-container mx-auto flex items-center justify-center shadow-xs">
               <Sparkles className="w-7 h-7" />
             </div>
 
             <div className="space-y-1">
-              <h3 className="text-2xl font-bold text-neutral-100">진단 평가 완료</h3>
-              <p className="text-sm text-neutral-400">
-                수학 진단 점수: <span className="text-indigo-400 font-bold font-mono text-base">{finalScore}점</span>
+              <h3 className="text-2xl font-bold text-on-surface">진단 평가 완료</h3>
+              <p className="text-sm text-on-surface-variant">
+                수학 진단 점수: <span className="text-primary font-bold font-mono text-base">{finalScore}점</span>
               </p>
             </div>
 
-            <div className="p-4 bg-neutral-950/80 border border-neutral-800 rounded-2xl text-left space-y-2">
-              <span className="text-xs text-neutral-500 font-mono">추천 시작 단원</span>
+            <div className="p-5 bg-surface-container border border-outline-variant/50 rounded-md3-lg text-left space-y-2">
+              <span className="text-xs text-on-surface-variant font-mono font-medium">추천 시작 단원</span>
               <div className="flex items-center justify-between">
-                <span className="text-base font-bold text-neutral-100">{recommendedTopic.name}</span>
-                <span className="text-xs px-2.5 py-1 rounded-full bg-indigo-950 text-indigo-300 font-medium">
+                <span className="text-base font-bold text-on-surface">{recommendedTopic.name}</span>
+                <span className="text-xs px-2.5 py-1 rounded-md3-full bg-primary-container text-on-primary-container font-medium">
                   바로 추천
                 </span>
               </div>
-              <p className="text-xs text-neutral-400">
+              <p className="text-xs text-on-surface-variant leading-relaxed">
                 현재 수준에 가장 적합한 개념부터 탄탄하게 채워나갈 수 있습니다.
               </p>
             </div>
 
+            {/* MD3 Filled Button */}
             <button
               onClick={() => {
                 onClose();
                 onComplete(recommendedTopic.id);
               }}
-              className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm rounded-xl transition-all flex items-center justify-center gap-2 active:scale-95 shadow-lg shadow-indigo-950/40"
+              className="w-full py-3.5 bg-primary hover:brightness-110 text-on-primary font-medium text-sm rounded-md3-full transition-all flex items-center justify-center gap-2 active:scale-95 shadow-xs"
             >
               <span>추천 단원으로 이동하기</span>
               <ArrowRight className="w-4 h-4" />

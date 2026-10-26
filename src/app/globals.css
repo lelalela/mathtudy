@@ -1,26 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Material Design 3 (MD3) Dark Color Scheme (Default) */
+  --md-sys-color-primary: #C3C0FF;
+  --md-sys-color-on-primary: #292C99;
+  --md-sys-color-primary-container: #4044B0;
+  --md-sys-color-on-primary-container: #E2E0FF;
+
+  --md-sys-color-secondary: #C6C4DD;
+  --md-sys-color-on-secondary: #2F2F42;
+  --md-sys-color-secondary-container: #454559;
+  --md-sys-color-on-secondary-container: #E3E1F9;
+
+  --md-sys-color-tertiary: #EAB5DE;
+  --md-sys-color-on-tertiary: #462143;
+  --md-sys-color-tertiary-container: #60375B;
+  --md-sys-color-on-tertiary-container: #FFD6F6;
+
+  --md-sys-color-error: #FFB4AB;
+  --md-sys-color-on-error: #690005;
+  --md-sys-color-error-container: #93000A;
+  --md-sys-color-on-error-container: #FFDAD6;
+
+  /* Surface and Container Hierarchy (MD3 Dark) */
+  --md-sys-color-surface: #131318;
+  --md-sys-color-on-surface: #E4E1EC;
+  --md-sys-color-on-surface-variant: #C7C5D3;
+  --md-sys-color-surface-dim: #131318;
+  --md-sys-color-surface-bright: #393842;
+  --md-sys-color-surface-container-lowest: #0E0E13;
+  --md-sys-color-surface-container-low: #1B1B22;
+  --md-sys-color-surface-container: #202027;
+  --md-sys-color-surface-container-high: #2A2A32;
+  --md-sys-color-surface-container-highest: #35343D;
+
+  --md-sys-color-outline: #918F9E;
+  --md-sys-color-outline-variant: #474552;
+  --md-sys-color-inverse-surface: #E4E1EC;
+  --md-sys-color-inverse-on-surface: #303038;
+  --md-sys-color-inverse-primary: #595DB0;
+
+  /* MD3 Shape Tokens */
+  --md-sys-shape-corner-none: 0px;
+  --md-sys-shape-corner-extra-small: 4px;
+  --md-sys-shape-corner-small: 8px;
+  --md-sys-shape-corner-medium: 12px;
+  --md-sys-shape-corner-large: 16px;
+  --md-sys-shape-corner-extra-large: 28px;
+  --md-sys-shape-corner-full: 9999px;
+
+  /* Typography */
+  --font-roboto-flex: 'Roboto Flex', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono-code: 'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-primary: var(--md-sys-color-primary);
+  --color-on-primary: var(--md-sys-color-on-primary);
+  --color-primary-container: var(--md-sys-color-primary-container);
+  --color-on-primary-container: var(--md-sys-color-on-primary-container);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-secondary: var(--md-sys-color-secondary);
+  --color-on-secondary: var(--md-sys-color-on-secondary);
+  --color-secondary-container: var(--md-sys-color-secondary-container);
+  --color-on-secondary-container: var(--md-sys-color-on-secondary-container);
+
+  --color-tertiary: var(--md-sys-color-tertiary);
+  --color-on-tertiary: var(--md-sys-color-on-tertiary);
+  --color-tertiary-container: var(--md-sys-color-tertiary-container);
+  --color-on-tertiary-container: var(--md-sys-color-on-tertiary-container);
+
+  --color-error: var(--md-sys-color-error);
+  --color-on-error: var(--md-sys-color-on-error);
+  --color-error-container: var(--md-sys-color-error-container);
+  --color-on-error-container: var(--md-sys-color-on-error-container);
+
+  --color-surface: var(--md-sys-color-surface);
+  --color-on-surface: var(--md-sys-color-on-surface);
+  --color-on-surface-variant: var(--md-sys-color-on-surface-variant);
+  --color-surface-dim: var(--md-sys-color-surface-dim);
+  --color-surface-bright: var(--md-sys-color-surface-bright);
+  --color-surface-container-lowest: var(--md-sys-color-surface-container-lowest);
+  --color-surface-container-low: var(--md-sys-color-surface-container-low);
+  --color-surface-container: var(--md-sys-color-surface-container);
+  --color-surface-container-high: var(--md-sys-color-surface-container-high);
+  --color-surface-container-highest: var(--md-sys-color-surface-container-highest);
+
+  --color-outline: var(--md-sys-color-outline);
+  --color-outline-variant: var(--md-sys-color-outline-variant);
+  --color-inverse-surface: var(--md-sys-color-inverse-surface);
+  --color-inverse-on-surface: var(--md-sys-color-inverse-on-surface);
+  --color-inverse-primary: var(--md-sys-color-inverse-primary);
+
+  --radius-md3-xs: var(--md-sys-shape-corner-extra-small);
+  --radius-md3-sm: var(--md-sys-shape-corner-small);
+  --radius-md3-md: var(--md-sys-shape-corner-medium);
+  --radius-md3-lg: var(--md-sys-shape-corner-large);
+  --radius-md3-xl: var(--md-sys-shape-corner-extra-large);
+  --radius-md3-full: var(--md-sys-shape-corner-full);
+
+  --font-sans: var(--font-roboto-flex);
+  --font-mono: var(--font-mono-code);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  font-family: var(--font-roboto-flex);
+}
+
+/* Custom MD3 Spring & Ripple-like transitions */
+.md3-button-motion {
+  transition: all 250ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.md3-button-motion:active {
+  transform: scale(0.97);
+}
+
+.md3-card-hover {
+  transition: transform 250ms cubic-bezier(0.2, 0, 0, 1), background-color 250ms cubic-bezier(0.2, 0, 0, 1), border-color 250ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.md3-card-hover:hover {
+  background-color: var(--md-sys-color-surface-container-high);
 }

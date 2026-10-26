@@ -42,12 +42,12 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
     const centerY = height / 2;
     const scale = 25; // pixels per math unit (-8 to +8)
 
-    // Clear background
-    ctx.fillStyle = '#0a0b10';
+    // Clear background (MD3 surface container lowest)
+    ctx.fillStyle = '#0E0E13';
     ctx.fillRect(0, 0, width, height);
 
-    // Draw Grid
-    ctx.strokeStyle = '#1e2230';
+    // Draw Grid (MD3 surface container high)
+    ctx.strokeStyle = '#202027';
     ctx.lineWidth = 1;
     ctx.beginPath();
     for (let x = centerX % scale; x < width; x += scale) {
@@ -60,8 +60,8 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
     }
     ctx.stroke();
 
-    // Draw Axes
-    ctx.strokeStyle = '#475569';
+    // Draw Axes (MD3 outline)
+    ctx.strokeStyle = '#474552';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     // X Axis
@@ -72,9 +72,9 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
     ctx.lineTo(centerX, height);
     ctx.stroke();
 
-    // Ticks & Labels
-    ctx.fillStyle = '#64748b';
-    ctx.font = '10px monospace';
+    // Ticks & Labels (MD3 on-surface-variant)
+    ctx.fillStyle = '#918F9E';
+    ctx.font = '10px Roboto, sans-serif';
     for (let i = -8; i <= 8; i++) {
       if (i === 0) continue;
       // X ticks
@@ -85,8 +85,8 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
       ctx.fillText(`${i}`, centerX + 6, py + 4);
     }
 
-    // Draw Function Curve
-    ctx.strokeStyle = '#38bdf8'; // Sky blue curve
+    // Draw Function Curve (MD3 primary)
+    ctx.strokeStyle = '#C3C0FF';
     ctx.lineWidth = 2.5;
     ctx.beginPath();
 
@@ -114,17 +114,17 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
     }
     ctx.stroke();
 
-    // Highlight Intercepts / Key Points
+    // Highlight Intercepts / Key Points (MD3 Tertiary & Emerald)
     if (type === 'linear') {
       // Y-intercept (0, b)
       const yIntPy = centerY - b * scale;
       if (yIntPy >= 0 && yIntPy <= height) {
-        ctx.fillStyle = '#f43f5e'; // Rose dot
+        ctx.fillStyle = '#EAB5DE'; // Tertiary dot
         ctx.beginPath();
         ctx.arc(centerX, yIntPy, 5, 0, Math.PI * 2);
         ctx.fill();
-        ctx.fillStyle = '#fda4af';
-        ctx.font = '11px sans-serif';
+        ctx.fillStyle = '#FFD6F6';
+        ctx.font = '11px Roboto, sans-serif';
         ctx.fillText(`(0, ${b})`, centerX + 8, yIntPy - 6);
       }
 
@@ -133,12 +133,12 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
         const rootX = -b / a;
         const rootPx = centerX + rootX * scale;
         if (rootPx >= 0 && rootPx <= width) {
-          ctx.fillStyle = '#10b981'; // Emerald dot
+          ctx.fillStyle = '#34D399'; // Emerald dot
           ctx.beginPath();
           ctx.arc(rootPx, centerY, 5, 0, Math.PI * 2);
           ctx.fill();
-          ctx.fillStyle = '#6ee7b7';
-          ctx.font = '11px sans-serif';
+          ctx.fillStyle = '#A7F3D0';
+          ctx.font = '11px Roboto, sans-serif';
           ctx.fillText(`(${rootX.toFixed(1)}, 0)`, rootPx - 15, centerY - 8);
         }
       }
@@ -150,12 +150,12 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
         const vPx = centerX + vx * scale;
         const vPy = centerY - vy * scale;
         if (vPx >= 0 && vPx <= width && vPy >= 0 && vPy <= height) {
-          ctx.fillStyle = '#f59e0b'; // Amber vertex dot
+          ctx.fillStyle = '#FBBF24'; // Amber vertex dot
           ctx.beginPath();
           ctx.arc(vPx, vPy, 5, 0, Math.PI * 2);
           ctx.fill();
-          ctx.fillStyle = '#fcd34d';
-          ctx.font = '11px sans-serif';
+          ctx.fillStyle = '#FDE68A';
+          ctx.font = '11px Roboto, sans-serif';
           ctx.fillText(`꼭짓점 (${vx.toFixed(1)}, ${vy.toFixed(1)})`, vPx + 8, vPy - 4);
         }
       }
@@ -169,15 +169,16 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
       : `y = ${a === 1 ? '' : a === -1 ? '-' : a}x^2 ${b >= 0 ? `+ ${b}x` : `- ${Math.abs(b)}x`} ${c >= 0 ? `+ ${c}` : `- ${Math.abs(c)}`}`;
 
   return (
-    <div className="w-full bg-neutral-900 border border-neutral-800 rounded-2xl p-4 shadow-lg flex flex-col gap-3">
+    <div className="w-full bg-surface-container-low border border-outline-variant/50 rounded-md3-xl p-5 sm:p-6 shadow-sm flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-sky-400 animate-pulse" />
-          <h4 className="text-sm font-semibold text-neutral-200">인터랙티브 함수 시각화</h4>
+          <span className="w-2.5 h-2.5 rounded-md3-full bg-primary animate-pulse" />
+          <h4 className="text-sm font-semibold text-on-surface">인터랙티브 함수 시각화</h4>
         </div>
+        {/* MD3 Text Button */}
         <button
           onClick={resetValues}
-          className="text-xs text-neutral-400 hover:text-neutral-200 flex items-center gap-1 transition-colors"
+          className="text-xs text-on-surface-variant hover:text-on-surface px-3 py-1 rounded-md3-full hover:bg-surface-container flex items-center gap-1.5 transition-all"
         >
           <RotateCcw className="w-3.5 h-3.5" />
           <span>초기화</span>
@@ -185,12 +186,12 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
       </div>
 
       {/* Formula Card */}
-      <div className="py-2 px-3 bg-neutral-950/80 border border-neutral-800/80 rounded-xl text-center">
+      <div className="py-2.5 px-4 bg-surface-container-lowest border border-outline-variant/40 rounded-md3-md text-center">
         <MathRenderer latex={currentFormulaLatex} displayMode />
       </div>
 
       {/* Canvas Viewport */}
-      <div className="relative w-full flex justify-center overflow-hidden rounded-xl border border-neutral-800">
+      <div className="relative w-full flex justify-center overflow-hidden rounded-md3-lg border border-outline-variant/40 bg-surface-container-lowest">
         <canvas
           ref={canvasRef}
           width={400}
@@ -200,11 +201,11 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
       </div>
 
       {/* Parameter Sliders */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
-        <div className="space-y-1">
-          <div className="flex justify-between text-xs text-neutral-400">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 pt-1">
+        <div className="space-y-1.5">
+          <div className="flex justify-between text-xs text-on-surface-variant">
             <span>{type === 'linear' ? '기울기 (a)' : '이차항 계수 (a)'}</span>
-            <span className="font-mono font-bold text-sky-400">{a}</span>
+            <span className="font-mono font-bold text-primary">{a}</span>
           </div>
           <input
             type="range"
@@ -216,14 +217,14 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
               const val = Number(e.target.value);
               setA(val === 0 && type === 'quadratic' ? 1 : val);
             }}
-            className="w-full accent-sky-500 cursor-pointer h-1.5 bg-neutral-800 rounded-lg"
+            className="w-full accent-primary cursor-pointer h-1.5 bg-surface-container-highest rounded-md3-full"
           />
         </div>
 
-        <div className="space-y-1">
-          <div className="flex justify-between text-xs text-neutral-400">
+        <div className="space-y-1.5">
+          <div className="flex justify-between text-xs text-on-surface-variant">
             <span>{type === 'linear' ? 'y절편 (b)' : '일차항 계수 (b)'}</span>
-            <span className="font-mono font-bold text-rose-400">{b}</span>
+            <span className="font-mono font-bold text-tertiary">{b}</span>
           </div>
           <input
             type="range"
@@ -232,15 +233,15 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
             step={1}
             value={b}
             onChange={(e) => setB(Number(e.target.value))}
-            className="w-full accent-rose-500 cursor-pointer h-1.5 bg-neutral-800 rounded-lg"
+            className="w-full accent-tertiary cursor-pointer h-1.5 bg-surface-container-highest rounded-md3-full"
           />
         </div>
 
         {type === 'quadratic' && (
-          <div className="space-y-1 md:col-span-2">
-            <div className="flex justify-between text-xs text-neutral-400">
+          <div className="space-y-1.5 md:col-span-2">
+            <div className="flex justify-between text-xs text-on-surface-variant">
               <span>상수항 (c)</span>
-              <span className="font-mono font-bold text-amber-400">{c}</span>
+              <span className="font-mono font-bold text-amber-300">{c}</span>
             </div>
             <input
               type="range"
@@ -249,7 +250,7 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
               step={1}
               value={c}
               onChange={(e) => setC(Number(e.target.value))}
-              className="w-full accent-amber-500 cursor-pointer h-1.5 bg-neutral-800 rounded-lg"
+              className="w-full accent-amber-400 cursor-pointer h-1.5 bg-surface-container-highest rounded-md3-full"
             />
           </div>
         )}

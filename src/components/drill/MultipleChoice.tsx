@@ -26,19 +26,19 @@ export const MultipleChoice: React.FC<MultipleChoiceProps> = ({
         const isSelected = selectedChoice === choice;
         const isCorrect = choice === correctAnswer;
 
-        let btnStyle = 'bg-neutral-900 border-neutral-800 text-neutral-200 hover:border-neutral-700';
+        let btnStyle = 'bg-surface-container-low border-outline-variant/60 text-on-surface hover:bg-surface-container hover:border-outline';
 
         if (isSelected && !isSubmitted) {
-          btnStyle = 'bg-indigo-950/60 border-indigo-500 text-indigo-200 ring-2 ring-indigo-500/20';
+          btnStyle = 'bg-primary-container/40 border-primary text-on-surface ring-2 ring-primary/30';
         }
 
         if (isSubmitted) {
           if (isCorrect) {
-            btnStyle = 'bg-emerald-950/60 border-emerald-500 text-emerald-200 font-semibold ring-2 ring-emerald-500/20';
+            btnStyle = 'bg-emerald-950/60 border-emerald-500 text-emerald-200 font-semibold ring-2 ring-emerald-500/30';
           } else if (isSelected && !isCorrect) {
-            btnStyle = 'bg-rose-950/60 border-rose-500 text-rose-200';
+            btnStyle = 'bg-error-container/60 border-error text-on-error-container';
           } else {
-            btnStyle = 'opacity-40 bg-neutral-900 border-neutral-800';
+            btnStyle = 'opacity-35 bg-surface-container-low border-outline-variant/30 text-on-surface-variant';
           }
         }
 
@@ -48,9 +48,9 @@ export const MultipleChoice: React.FC<MultipleChoiceProps> = ({
             type="button"
             disabled={disabled || isSubmitted}
             onClick={() => onSelect(choice)}
-            className={`p-4 rounded-xl border text-center transition-all flex items-center justify-center relative min-h-[56px] active:scale-[0.98] ${btnStyle}`}
+            className={`p-4 rounded-md3-lg border text-center transition-all flex items-center justify-center relative min-h-[58px] active:scale-[0.98] md3-button-motion ${btnStyle}`}
           >
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[11px] font-mono font-medium text-neutral-500">
+            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-mono font-medium text-on-surface-variant">
               {['①', '②', '③', '④'][idx] || `${idx + 1}.`}
             </span>
             <div className="text-base font-medium">
