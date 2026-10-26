@@ -1,0 +1,13 @@
+services:
+  mathtudy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mathtudy
+    restart: unless-stopped
+    ports:
+      - "8980:8980"
+    environment:
+      - NODE_ENV=production
+      - PORT=8980
+      - HOSTNAME=0.0.0.0
