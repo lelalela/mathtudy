@@ -3,9 +3,10 @@
 import React, { useState } from 'react';
 import { Problem } from '@/lib/generators/types';
 import { generateFractionAddition } from '@/lib/generators/arithmetic';
-import { generateNegativeArithmetic, generateExponentBasic } from '@/lib/generators/integers-prealgebra';
 import { generateTwoStepLinearEquation } from '@/lib/generators/linear-equations';
-import { generateSlopeFromTwoPoints } from '@/lib/generators/linear-functions';
+import { generateSpecialTrigValues } from '@/lib/generators/trigonometry-pythagoras';
+import { generatePolynomialDerivative } from '@/lib/generators/calculus';
+import { generateMatrixDeterminant } from '@/lib/generators/linear-algebra-stats';
 import { saveProgress, loadProgress } from '@/lib/storage';
 import MathRenderer from '../ui/MathRenderer';
 import MultipleChoice from '../drill/MultipleChoice';
@@ -23,17 +24,17 @@ const DiagnosticContent: React.FC<{
 }> = ({ onClose, onComplete }) => {
   const [questions] = useState<Problem[]>(() => [
     generateFractionAddition('medium'),
-    generateNegativeArithmetic('medium'),
-    generateExponentBasic('medium'),
     generateTwoStepLinearEquation('medium'),
-    generateSlopeFromTwoPoints('medium'),
+    generateSpecialTrigValues('medium'),
+    generatePolynomialDerivative('medium'),
+    generateMatrixDeterminant('medium'),
   ]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedChoices, setSelectedChoices] = useState<Record<number, string>>({});
   const [isFinished, setIsFinished] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
-  const [recommendedTopic, setRecommendedTopic] = useState({ id: 'fractions', name: '기초 산수' });
+  const [recommendedTopic, setRecommendedTopic] = useState({ id: 'fractions', name: '01. 기초 산수' });
 
   const currentProb = questions[currentIndex];
 
@@ -65,11 +66,11 @@ const DiagnosticContent: React.FC<{
       setFinalScore(scorePercent);
 
       // Determine recommendation
-      let recId = firstFailedTopicId || 'linear-functions-slope';
-      let recName = firstFailedTopicName || '고급 대수 및 함수';
+      let recId = firstFailedTopicId || 'derivatives';
+      let recName = firstFailedTopicName || '미적분학 및 고급수학';
       if (scorePercent === 100) {
-        recId = 'linear-functions-slope';
-        recName = '일차함수 및 심화 수학';
+        recId = 'matrix-determinant';
+        recName = '선형대수와 고급수학 마스터 과정';
       }
       setRecommendedTopic({ id: recId, name: recName });
       setIsFinished(true);
