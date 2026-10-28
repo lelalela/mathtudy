@@ -8,9 +8,12 @@ import { recordProblemResult } from '@/lib/storage';
 import MathRenderer from '../ui/MathRenderer';
 import MathKeypad from '../ui/MathKeypad';
 import ScratchpadOverlay from '../ui/ScratchpadOverlay';
+import GeminiKeyModal from '../ui/GeminiKeyModal';
+import AiTutorPanel from './AiTutorPanel';
 import MultipleChoice from './MultipleChoice';
 import StepSolution from './StepSolution';
-import { ArrowLeft, RefreshCw, Lightbulb, Keyboard, LayoutGrid, PenLine } from 'lucide-react';
+import { getGeminiApiKey } from '@/lib/gemini';
+import { ArrowLeft, RefreshCw, Lightbulb, Keyboard, LayoutGrid, PenLine, Sparkles } from 'lucide-react';
 
 interface DrillViewProps {
   generatorId: string;
@@ -42,6 +45,9 @@ export const DrillView: React.FC<DrillViewProps> = ({
   const [solvedCountInSession, setSolvedCountInSession] = useState<number>(0);
   const [correctCountInSession, setCorrectCountInSession] = useState<number>(0);
   const [isScratchpadOpen, setIsScratchpadOpen] = useState<boolean>(false);
+  const [showAiTutor, setShowAiTutor] = useState<boolean>(false);
+  const [isKeyModalOpen, setIsKeyModalOpen] = useState<boolean>(false);
+  const [geminiKey, setGeminiKey] = useState<string>(() => getGeminiApiKey() || '');
 
   // Generate a fresh problem
   const loadNextProblem = useCallback(() => {
@@ -53,7 +59,17 @@ export const DrillView: React.FC<DrillViewProps> = ({
     setIsSubmitted(false);
     setIsCorrect(false);
     setShowHints(false);
+    setShowAiTutor(false);
   }, [generatorItem, difficulty]);
+
+  const handleToggleAiTutor = () => {
+    const currentKey = geminiKey || getGeminiApiKey();
+    if (!currentKey) {
+      setIsKeyModalOpen(true);
+      return;
+    }
+    setShowAiTutor((prev) => !prev);
+  };
 
   const handleSubmit = (userAnswer: string) => {
     if (!problem || isSubmitted) return;
@@ -170,15 +186,27 @@ export const DrillView: React.FC<DrillViewProps> = ({
           <MathRenderer latex={problem.questionLatex} displayMode className="text-xl sm:text-2xl text-on-surface" />
         </div>
 
-        {/* Hint toggle button */}
+        {/* Hint & AI Tutor toggle buttons */}
         {!isSubmitted && (
-          <div className="pt-2 flex justify-center">
+          <div className="pt-2 flex items-center justify-center gap-2 flex-wrap">
             <button
               onClick={() => setShowHints(!showHints)}
-              className="text-xs text-on-surface-variant hover:text-amber-300 px-3 py-1 rounded-md3-full hover:bg-surface-container flex items-center gap-1.5 transition-colors"
+              className="text-xs text-on-surface-variant hover:text-amber-300 px-3 py-1.5 rounded-md3-full hover:bg-surface-container flex items-center gap-1.5 transition-colors border border-outline-variant/30 hover:border-outline-variant/60"
             >
               <Lightbulb className="w-3.5 h-3.5 text-amber-400" />
               <span>{showHints ? '힌트 숨기기' : '힌트 보기'}</span>
+            </button>
+
+            <button
+              onClick={handleToggleAiTutor}
+              className={`text-xs px-3.5 py-1.5 rounded-md3-full flex items-center gap-1.5 transition-all border ${
+                showAiTutor
+                  ? 'bg-primary/20 text-primary border-primary/50 shadow-xs font-semibold'
+                  : 'text-on-surface-variant hover:text-primary hover:bg-surface-container border-outline-variant/30 hover:border-primary/40'
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5 text-primary" />
+              <span>{showAiTutor ? 'AI 튜터 닫기' : 'AI 풀이 보기'}</span>
             </button>
           </div>
         )}
@@ -191,6 +219,16 @@ export const DrillView: React.FC<DrillViewProps> = ({
           </div>
         )}
       </div>
+
+      {/* AI Tutor Panel (shown when requested) */}
+      {showAiTutor && !isSubmitted && (
+        <AiTutorPanel
+          problem={problem}
+          apiKey={geminiKey}
+          onOpenKeySettings={() => setIsKeyModalOpen(true)}
+          onClose={() => setShowAiTutor(false)}
+        />
+      )}
 
       {/* Answer Inputs */}
       <div className="space-y-4">
@@ -257,6 +295,16 @@ export const DrillView: React.FC<DrillViewProps> = ({
         isOpen={isScratchpadOpen}
         onClose={() => setIsScratchpadOpen(false)}
         problemId={problem.id}
+      />
+
+      {/* Gemini API Key Modal */}
+      <GeminiKeyModal
+        isOpen={isKeyModalOpen}
+        onClose={() => setIsKeyModalOpen(false)}
+        onKeySaved={(newKey) => {
+          setGeminiKey(newKey);
+          setShowAiTutor(true);
+        }}
       />
     </div>
   );
