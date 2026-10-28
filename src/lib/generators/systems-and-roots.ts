@@ -39,21 +39,27 @@ export function generateSystemOfLinearEquations(difficulty: Difficulty = 'medium
   const steps: ProblemStep[] = [
     {
       stepNumber: 1,
-      title: '연립방정식 계수 맞추기 (가감법)',
-      explanation: '한 미지수를 소거하기 위해 각 식의 양변에 적절한 수를 곱해 계수의 절댓값을 일치시킵니다.',
-      mathLatex: `(${eq1}) \\times (${Math.abs(b2)}), \\quad (${eq2}) \\times (${Math.abs(b1)})`
+      title: '한 문자 소거를 위한 계수 맞추기 (가감법 준비)',
+      explanation: `미지수 y를 없애기 위해 첫 번째 식에 |${b2}|를 곱하고 두 번째 식에 |${b1}|을 곱하여 y 앞의 계수의 절댓값을 똑같이 맞춥니다.`,
+      why: '미지수가 x와 y 두 개면 한 번에 답을 낼 수 없습니다. 양변에 수를 곱해 y의 크기를 똑같이 맞춘 뒤 두 식을 빼버리면 y가 사라져(소거) 단순한 일차방정식이 됩니다.',
+      mathLatex: `(${eq1}) \\times ${Math.abs(b2)}, \\quad (${eq2}) \\times ${Math.abs(b1)}`,
+      pitfall: '등호 오른쪽의 숫자(상수항)에는 곱하는 것을 깜빡 잊는 실수를 가장 많이 합니다. 식 전체의 모든 항에 똑같이 곱해야 등식이 유지됩니다!'
     },
     {
       stepNumber: 2,
-      title: '두 식을 가감하여 첫 번째 미지수 구하기',
-      explanation: 'y를 소거하고 x에 대한 일차방정식을 풀어 x의 해를 구합니다.',
-      mathLatex: `x = ${targetX}`
+      title: '두 식을 더하거나 빼서 첫 번째 미지수 x 구하기',
+      explanation: `계수를 맞춘 두 식을 빼서 y를 제거하고, x에 대한 일차방정식을 풀어 x = ${targetX}를 구합니다.`,
+      why: '골칫거리였던 y가 완전히 사라졌으므로 중학교 1학년 일차방정식 풀이로 바로 해결됩니다.',
+      mathLatex: `x = ${targetX}`,
+      pitfall: '두 식을 뺄 때 아래 식의 부호가 전체적으로 반전되므로 뺄셈 부호 실수를 조심하세요.'
     },
     {
       stepNumber: 3,
-      title: 'x를 대입하여 y 구하기',
-      explanation: `구한 x = ${targetX}를 첫 번째 식에 대입하여 y의 값을 구합니다.`,
-      mathLatex: `y = ${targetY}`
+      title: '구한 x를 대입하여 나머지 미지수 y 구하기',
+      explanation: `알아낸 x = ${targetX}를 원래의 첫 번째 식(${eq1})에 대입하여 일차방정식을 풀면 y = ${targetY}가 나옵니다.`,
+      why: '둘 중 하나(x)의 정체를 알아냈으니, 원래 식에 쏙 집어넣으면 나머지 하나(y)도 저절로 풀립니다.',
+      mathLatex: `${a1}(${targetX}) + (${b1})y = ${c1} \\implies y = ${targetY}`,
+      pitfall: '최종 답을 적을 때 x와 y의 순서가 바뀌지 않았는지 다시 확인하세요.'
     }
   ];
 
@@ -71,7 +77,7 @@ export function generateSystemOfLinearEquations(difficulty: Difficulty = 'medium
     id: getUniqueId('sys-eq'),
     topicId: 'systems-equations',
     subtopicId: 'systems-equations',
-    unit: '연립일차방정식',
+    unit: '06. 연립일차방정식',
     title: '연립일차방정식 (가감법과 대입법)',
     difficulty,
     questionText: '다음 연립방정식을 풀어 미지수 x와 y의 값을 순서대로 구하세요.',
@@ -115,21 +121,31 @@ export function generateQuadraticDiscriminant(difficulty: Difficulty = 'medium')
   const steps: ProblemStep[] = [
     {
       stepNumber: 1,
-      title: '이차방정식의 계수 확인',
-      explanation: `ax² + bx + c = 0 에서 a = ${a}, b = ${b}, c = ${c} 입니다.`,
-      mathLatex: `a = ${a}, \\quad b = ${b}, \\quad c = ${c}`
+      title: '이차방정식의 계수(a, b, c) 추출하기',
+      explanation: `일반형 ax² + bx + c = 0 과 비교하여 계수를 확인합니다: a = ${a}, b = ${b}, c = ${c}.`,
+      why: '판별식 공식에 넣기 전 각각의 계수가 양수인지 음수인지 부호까지 정확히 확인해야 계산 실수를 막을 수 있습니다.',
+      mathLatex: `a = ${a}, \\quad b = ${b}, \\quad c = ${c}`,
+      pitfall: 'x 항이나 상수항의 부호가 마이너스(-)일 때 부호를 빠뜨리지 않도록 주의하세요.'
     },
     {
       stepNumber: 2,
-      title: '판별식 공식 대입',
-      explanation: '판별식 D = b² - 4ac 공식을 사용하여 판별식 값을 계산합니다.',
-      mathLatex: `D = (${b})^2 - 4(${a})(${c}) = ${b * b} - (${4 * a * c}) = ${D}`
+      title: '판별식 공식 D = b² - 4ac 대입 및 계산',
+      explanation: `공식에 대입하여 계산합니다: (${b})² - 4 \\times ${a} \\times (${c}) = ${b * b} - (${4 * a * c}) = ${D}.`,
+      why: '근의 공식에서 루트 안쪽에 들어가는 식이 바로 b² - 4ac입니다. 이 값이 양수인지 음수인지에 따라 근의 성격이 완전히 결정됩니다.',
+      mathLatex: `D = (${b})^2 - 4(${a})(${c}) = ${b * b} - (${4 * a * c}) = ${D}`,
+      pitfall: 'c가 음수일 때 -4ac는 마이너스와 마이너스가 곱해져 플러스(+)가 됩니다. 부호 처리에 각별히 유의하세요!'
     },
     {
       stepNumber: 3,
-      title: '근의 종류 판정',
-      explanation: D > 0 ? 'D > 0 이므로 서로 다른 두 실근을 갖습니다.' : D === 0 ? 'D = 0 이므로 중근을 갖습니다.' : 'D < 0 이므로 서로 다른 두 허근을 갖습니다.',
-      mathLatex: D > 0 ? 'D > 0 \\implies \\text{서로 다른 두 실근}' : D === 0 ? 'D = 0 \\implies \\text{중근}' : 'D < 0 \\implies \\text{서로 다른 두 허근}'
+      title: '판별식 부호로 근의 종류 판별하기',
+      explanation: D > 0
+        ? `D = ${D} > 0 이므로 루트 속이 양수가 되어 '서로 다른 두 실근'을 갖습니다.`
+        : D === 0
+        ? `D = 0 이므로 루트 부분이 사라져(±0) 오직 하나의 '중근(실근)'을 갖습니다.`
+        : `D = ${D} < 0 이므로 루트 속에 음수가 들어가 실수 범위에 존재하지 않는 '서로 다른 두 허근'을 갖습니다.`,
+      why: '루트 속이 0보다 크면 ±로 값이 2개 갈라지고, 0이면 1개로 겹치며, 0보다 작으면 허수 i가 생기기 때문입니다.',
+      mathLatex: D > 0 ? `D = ${D} > 0 \\implies \\text{서로 다른 두 실근}` : D === 0 ? `D = 0 \\implies \\text{중근}` : `D = ${D} < 0 \\implies \\text{서로 다른 두 허근}`,
+      pitfall: '중근도 실근의 일종입니다. "실근의 개수"를 물을 때는 D ≥ 0(D>0 또는 D=0)이어야 합니다.'
     }
   ];
 
@@ -151,7 +167,7 @@ export function generateQuadraticDiscriminant(difficulty: Difficulty = 'medium')
     id: getUniqueId('quad-disc'),
     topicId: 'high-algebra',
     subtopicId: 'quadratic-discriminant',
-    unit: '고등 대수학',
+    unit: '06. 연립방정식과 대수',
     title: '이차방정식 판별식 (D = b² - 4ac)',
     difficulty,
     questionText: `이차방정식 $${eqLatex}$ 의 판별식 $D$ 의 값을 계산하세요.`,

@@ -5,6 +5,8 @@ export interface ProblemStep {
   title: string;
   explanation: string;
   mathLatex?: string;
+  why?: string;       // 왜 이렇게 하는지 직관적 이유와 원리
+  pitfall?: string;   // 학생들이 흔히 저지르는 실수/주의점
 }
 
 export interface Problem {
