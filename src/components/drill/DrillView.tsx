@@ -7,9 +7,10 @@ import { getGenerator } from '@/lib/generators';
 import { recordProblemResult } from '@/lib/storage';
 import MathRenderer from '../ui/MathRenderer';
 import MathKeypad from '../ui/MathKeypad';
+import ScratchpadOverlay from '../ui/ScratchpadOverlay';
 import MultipleChoice from './MultipleChoice';
 import StepSolution from './StepSolution';
-import { ArrowLeft, RefreshCw, Lightbulb, Keyboard, LayoutGrid } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Lightbulb, Keyboard, LayoutGrid, PenLine } from 'lucide-react';
 
 interface DrillViewProps {
   generatorId: string;
@@ -40,6 +41,7 @@ export const DrillView: React.FC<DrillViewProps> = ({
   const [showHints, setShowHints] = useState<boolean>(false);
   const [solvedCountInSession, setSolvedCountInSession] = useState<number>(0);
   const [correctCountInSession, setCorrectCountInSession] = useState<number>(0);
+  const [isScratchpadOpen, setIsScratchpadOpen] = useState<boolean>(false);
 
   // Generate a fresh problem
   const loadNextProblem = useCallback(() => {
@@ -106,8 +108,21 @@ export const DrillView: React.FC<DrillViewProps> = ({
           <span>단원 목록</span>
         </button>
 
-        {/* MD3 Session Score Chip */}
+        {/* MD3 Session Score Chip & Scratchpad Toggle */}
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsScratchpadOpen((prev) => !prev)}
+            className={`flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-md3-full border transition-all ${
+              isScratchpadOpen
+                ? 'bg-primary text-on-primary border-primary shadow-xs'
+                : 'bg-surface-container-high border-outline-variant/40 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest'
+            }`}
+            title="수식 계산용 투명 연습장 열기"
+          >
+            <PenLine className="w-3.5 h-3.5" />
+            <span>연습장 {isScratchpadOpen ? 'ON' : '열기'}</span>
+          </button>
+
           <span className="text-xs font-mono px-3 py-1 rounded-md3-full bg-surface-container-high border border-outline-variant/40 text-on-surface-variant font-medium">
             세션 성적: <span className="text-emerald-400 font-bold">{correctCountInSession}</span> / {solvedCountInSession}
           </span>
@@ -224,6 +239,25 @@ export const DrillView: React.FC<DrillViewProps> = ({
           </button>
         </div>
       )}
+
+      {/* Floating Scratchpad Quick Action Button (when closed) */}
+      {!isScratchpadOpen && (
+        <button
+          onClick={() => setIsScratchpadOpen(true)}
+          className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-4 py-2.5 rounded-md3-full bg-surface-container-high/95 hover:bg-primary text-on-surface hover:text-on-primary border border-outline-variant/60 hover:border-primary shadow-xl backdrop-blur-md transition-all text-xs font-semibold hover:scale-105 active:scale-95 group"
+          title="수식 계산용 투명 연습장 열기"
+        >
+          <PenLine className="w-4 h-4 text-primary group-hover:text-on-primary transition-colors" />
+          <span>연습장</span>
+        </button>
+      )}
+
+      {/* Transparent Scratchpad Overlay */}
+      <ScratchpadOverlay
+        isOpen={isScratchpadOpen}
+        onClose={() => setIsScratchpadOpen(false)}
+        problemId={problem.id}
+      />
     </div>
   );
 };
