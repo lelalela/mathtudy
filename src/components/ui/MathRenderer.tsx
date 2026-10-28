@@ -29,6 +29,7 @@ export const MathRenderer: React.FC<MathRendererProps> = ({
 
   return (
     <span
+      suppressHydrationWarning
       className={`inline-block ${displayMode ? 'my-2 block overflow-x-auto py-1 text-center' : ''} ${className}`}
       dangerouslySetInnerHTML={{ __html: html }}
     />

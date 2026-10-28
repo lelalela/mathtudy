@@ -180,9 +180,12 @@ export const DrillView: React.FC<DrillViewProps> = ({
       </div>
 
       {/* Question Card (MD3 Elevated Card) */}
-      <div className="p-6 sm:p-7 bg-surface-container-low border border-outline-variant/50 rounded-md3-xl space-y-4 shadow-sm text-center relative overflow-hidden">
-        <p className="text-sm text-on-surface-variant">{problem.questionText}</p>
-        <div className="py-5 px-3 bg-surface-container-lowest border border-outline-variant/50 rounded-md3-lg shadow-inner">
+      <div
+        suppressHydrationWarning
+        className="p-6 sm:p-7 bg-surface-container-low border border-outline-variant/50 rounded-md3-xl space-y-4 shadow-sm text-center relative overflow-hidden"
+      >
+        <p suppressHydrationWarning className="text-sm text-on-surface-variant">{problem.questionText}</p>
+        <div suppressHydrationWarning className="py-5 px-3 bg-surface-container-lowest border border-outline-variant/50 rounded-md3-lg shadow-inner">
           <MathRenderer latex={problem.questionLatex} displayMode className="text-xl sm:text-2xl text-on-surface" />
         </div>
 

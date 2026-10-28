@@ -261,8 +261,8 @@ export const ScratchpadOverlay: React.FC<ScratchpadOverlayProps> = ({
       ref={containerRef}
       className={`fixed inset-0 z-50 select-none transition-all duration-200 ${
         isPointerMode
-          ? 'pointer-events-none bg-black/40 backdrop-blur-[1px]'
-          : 'pointer-events-auto bg-black/65 backdrop-blur-[2.5px]'
+          ? 'pointer-events-none bg-black/40 backdrop-blur-[0.5px]'
+          : 'pointer-events-auto bg-black/65 backdrop-blur-[0.5px]'
       }`}
       aria-label="수식 계산용 반투명 연습장"
     >

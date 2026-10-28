@@ -21,7 +21,7 @@ export const MultipleChoice: React.FC<MultipleChoiceProps> = ({
   disabled = false,
 }) => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-xl mx-auto">
+    <div suppressHydrationWarning className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-xl mx-auto">
       {choices.map((choice, idx) => {
         const isSelected = selectedChoice === choice;
         const isCorrect = choice === correctAnswer;
