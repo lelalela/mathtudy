@@ -99,7 +99,7 @@ export const AiTutorPanel: React.FC<AiTutorPanelProps> = ({
   onOpenKeySettings,
   onClose,
 }) => {
-  const [mode, setMode] = useState<AiTutorMode>('guide');
+  const [mode, setMode] = useState<AiTutorMode>('full');
   const [cache, setCache] = useState<Record<string, AiTutorResponse>>({});
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string>('');

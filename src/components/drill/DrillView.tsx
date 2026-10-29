@@ -189,7 +189,7 @@ export const DrillView: React.FC<DrillViewProps> = ({
           <MathRenderer latex={problem.questionLatex} displayMode className="text-xl sm:text-2xl text-on-surface" />
         </div>
 
-        {/* Hint & AI Tutor toggle buttons */}
+        {/* Hint toggle button */}
         {!isSubmitted && (
           <div className="pt-2 flex items-center justify-center gap-2 flex-wrap">
             <button
@@ -198,18 +198,6 @@ export const DrillView: React.FC<DrillViewProps> = ({
             >
               <Lightbulb className="w-3.5 h-3.5 text-amber-400" />
               <span>{showHints ? '힌트 숨기기' : '힌트 보기'}</span>
-            </button>
-
-            <button
-              onClick={handleToggleAiTutor}
-              className={`text-xs px-3.5 py-1.5 rounded-md3-full flex items-center gap-1.5 transition-all border ${
-                showAiTutor
-                  ? 'bg-primary/20 text-primary border-primary/50 shadow-xs font-semibold'
-                  : 'text-on-surface-variant hover:text-primary hover:bg-surface-container border-outline-variant/30 hover:border-primary/40'
-              }`}
-            >
-              <Sparkles className="w-3.5 h-3.5 text-primary" />
-              <span>{showAiTutor ? 'AI 튜터 닫기' : 'AI 풀이 보기'}</span>
             </button>
           </div>
         )}
@@ -222,16 +210,6 @@ export const DrillView: React.FC<DrillViewProps> = ({
           </div>
         )}
       </div>
-
-      {/* AI Tutor Panel (shown when requested) */}
-      {showAiTutor && !isSubmitted && (
-        <AiTutorPanel
-          problem={problem}
-          apiKey={geminiKey}
-          onOpenKeySettings={() => setIsKeyModalOpen(true)}
-          onClose={() => setShowAiTutor(false)}
-        />
-      )}
 
       {/* Answer Inputs */}
       <div className="space-y-4">
@@ -269,6 +247,30 @@ export const DrillView: React.FC<DrillViewProps> = ({
             isCorrect={isCorrect}
             correctAnswerLatex={problem.answerDisplayLatex}
           />
+
+          {/* AI Tutor Toggle Button & Panel */}
+          <div className="flex justify-center pt-1">
+            <button
+              onClick={handleToggleAiTutor}
+              className={`text-xs px-4 py-2 rounded-md3-full flex items-center gap-2 transition-all border ${
+                showAiTutor
+                  ? 'bg-primary/20 text-primary border-primary/50 shadow-xs font-semibold'
+                  : 'bg-surface-container text-on-surface-variant hover:text-primary hover:bg-surface-container-high border-outline-variant/40 hover:border-primary/40'
+              }`}
+            >
+              <Sparkles className="w-4 h-4 text-primary" />
+              <span>{showAiTutor ? '✨ Gemini AI 과외 닫기' : '✨ Gemini AI 과외 선생님 추가 해설 듣기'}</span>
+            </button>
+          </div>
+
+          {showAiTutor && (
+            <AiTutorPanel
+              problem={problem}
+              apiKey={geminiKey}
+              onOpenKeySettings={() => setIsKeyModalOpen(true)}
+              onClose={() => setShowAiTutor(false)}
+            />
+          )}
 
           {/* MD3 Filled Button: Next Problem */}
           <button

@@ -73,6 +73,10 @@ export function generateSystemOfLinearEquations(difficulty: Difficulty = 'medium
   const distractors = Array.from(distractorsSet).slice(0, 3);
   const choices = shuffleArray([answerStr, ...distractors]);
 
+  const mult1 = Math.abs(b2);
+  const mult2 = Math.abs(b1);
+  const signAction = (b1 > 0 && b2 > 0) || (b1 < 0 && b2 < 0) ? '뺍니다' : '더합니다';
+
   return {
     id: getUniqueId('sys-eq'),
     topicId: 'systems-equations',
@@ -88,8 +92,10 @@ export function generateSystemOfLinearEquations(difficulty: Difficulty = 'medium
     choices,
     steps,
     hints: [
-      '가감법: 한 문자의 계수를 맞춰 두 식을 더하거나 빼서 한 문자를 소거하세요.',
-      '대입법: 한 식을 x = ... 꼴로 정리한 뒤 다른 식에 대입해도 됩니다.'
+      '1단계 (소거법 핵심 전략): 미지수가 2개(x, y)면 한 번에 풀 수 없습니다! 한 문자(y)를 먼저 없애(소거) x 하나만 남기는 것이 핵심입니다.',
+      `2단계 (계수 맞추기): y를 없애기 위해 첫 번째 식 양변에 ${mult1}을 곱하고, 두 번째 식 양변에 ${mult2}를 곱하세요. (주의: 등호 우변의 숫자도 반드시 똑같이 곱해야 합니다!)`,
+      `3단계 (식 합치기): 두 식에서 y 앞의 부호가 ${signAction === '더합니다' ? '서로 반대이므로 두 식을 통째로 "더하세요(+)"' : '서로 같으므로 두 식을 통째로 "빼세요(-)"'}. y가 0으로 사라져 단순한 일차방정식이 됩니다.`,
+      `4단계 (대입하여 y 찾기): 구한 x값을 첫 번째 식(${eq1})의 x 자리에 쏙 집어넣으면 y도 쉽게 계산됩니다.`
     ],
     conceptSummary: '연립방정식은 미지수가 2개인 식에서 한 미지수를 소거(가감법/대입법)하여 일차방정식으로 환원해 풉니다.'
   };
