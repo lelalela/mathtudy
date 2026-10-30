@@ -27,7 +27,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 3. **고품질 수학 렌더링 & 미니멀 UI**:
    - 수식은 반드시 `katex`를 통하여 렌더링합니다 (`MathRenderer` 컴포넌트 활용).
-   - 비주얼 스타일은 Notion / Linear 감성의 모던 미니멀 & 다크 모드 중심 디자인을 유지합니다.
+   - 비주얼 스타일은 Material Design 3 (Material You) 다크 모드 중심 디자인을 따릅니다. UI 작업 시 `material-3` 스킬(`.claude/skills/material-3`)을 참고합니다.
 
 ---
 
