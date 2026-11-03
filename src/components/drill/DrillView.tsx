@@ -21,12 +21,18 @@ interface DrillViewProps {
   onRefreshProgress: () => void;
 }
 
+const DIFFICULTIES: { id: Difficulty; label: string }[] = [
+  { id: 'easy', label: '쉬움 (easy)' },
+  { id: 'medium', label: '보통 (medium)' },
+  { id: 'hard', label: '어려움 (hard)' },
+];
+
 export const DrillView: React.FC<DrillViewProps> = ({
   generatorId,
   onBack,
   onRefreshProgress,
 }) => {
-  const [difficulty] = useState<Difficulty>('medium');
+  const [difficulty, setDifficulty] = useState<Difficulty>('medium');
   const [inputMode, setInputMode] = useState<'multiple' | 'keypad'>('multiple');
 
   const generatorItem = getGenerator(generatorId);
@@ -49,7 +55,21 @@ export const DrillView: React.FC<DrillViewProps> = ({
   const [isKeyModalOpen, setIsKeyModalOpen] = useState<boolean>(false);
   const [geminiKey, setGeminiKey] = useState<string>(() => getGeminiApiKey() || '');
 
-  // Generate a fresh problem
+  // Change difficulty and generate a fresh problem
+  const handleDifficultyChange = useCallback((newDifficulty: Difficulty) => {
+    setDifficulty(newDifficulty);
+    if (!generatorItem) return;
+    const newProb = generatorItem.generator(newDifficulty);
+    setProblem(newProb);
+    setSelectedChoice(null);
+    setKeypadValue('');
+    setIsSubmitted(false);
+    setIsCorrect(false);
+    setShowHints(false);
+    setShowAiTutor(false);
+  }, [generatorItem]);
+
+  // Generate a fresh problem with current difficulty
   const loadNextProblem = useCallback(() => {
     if (!generatorItem) return;
     const newProb = generatorItem.generator(difficulty);
@@ -145,37 +165,65 @@ export const DrillView: React.FC<DrillViewProps> = ({
         </div>
       </div>
 
-      {/* Problem Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <span className="text-xs font-mono font-medium text-primary">{problem.unit}</span>
-          <h2 className="text-lg font-bold text-on-surface">{problem.title}</h2>
+      {/* Problem Header & Difficulty Filter Chips */}
+      <div className="space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <span className="text-xs font-mono font-medium text-primary">{problem.unit}</span>
+            <h2 className="text-lg font-bold text-on-surface">{problem.title}</h2>
+          </div>
+
+          {/* MD3 Segmented Button for Input Mode */}
+          <div className="flex items-center self-start sm:self-auto bg-surface-container border border-outline-variant/60 rounded-md3-full p-1 shadow-xs">
+            <button
+              onClick={() => setInputMode('multiple')}
+              className={`px-3 py-1 rounded-md3-full text-xs font-medium flex items-center gap-1.5 transition-all md3-button-motion ${
+                inputMode === 'multiple'
+                  ? 'bg-secondary-container text-on-secondary-container shadow-xs font-semibold'
+                  : 'text-on-surface-variant hover:text-on-surface'
+              }`}
+            >
+              <LayoutGrid className="w-3.5 h-3.5" />
+              <span>객관식</span>
+            </button>
+            <button
+              onClick={() => setInputMode('keypad')}
+              className={`px-3 py-1 rounded-md3-full text-xs font-medium flex items-center gap-1.5 transition-all md3-button-motion ${
+                inputMode === 'keypad'
+                  ? 'bg-secondary-container text-on-secondary-container shadow-xs font-semibold'
+                  : 'text-on-surface-variant hover:text-on-surface'
+              }`}
+            >
+              <Keyboard className="w-3.5 h-3.5" />
+              <span>키패드</span>
+            </button>
+          </div>
         </div>
 
-        {/* MD3 Segmented Button for Input Mode */}
-        <div className="flex items-center bg-surface-container border border-outline-variant/60 rounded-md3-full p-1 shadow-xs">
-          <button
-            onClick={() => setInputMode('multiple')}
-            className={`px-3 py-1 rounded-md3-full text-xs font-medium flex items-center gap-1.5 transition-all md3-button-motion ${
-              inputMode === 'multiple'
-                ? 'bg-secondary-container text-on-secondary-container shadow-xs font-semibold'
-                : 'text-on-surface-variant hover:text-on-surface'
-            }`}
-          >
-            <LayoutGrid className="w-3.5 h-3.5" />
-            <span>객관식</span>
-          </button>
-          <button
-            onClick={() => setInputMode('keypad')}
-            className={`px-3 py-1 rounded-md3-full text-xs font-medium flex items-center gap-1.5 transition-all md3-button-motion ${
-              inputMode === 'keypad'
-                ? 'bg-secondary-container text-on-secondary-container shadow-xs font-semibold'
-                : 'text-on-surface-variant hover:text-on-surface'
-            }`}
-          >
-            <Keyboard className="w-3.5 h-3.5" />
-            <span>키패드</span>
-          </button>
+        {/* MD3 Filter Chips for Difficulty */}
+        <div className="flex items-center gap-2 pt-0.5">
+          <span className="text-xs font-medium text-on-surface-variant select-none">난이도:</span>
+          <div className="flex items-center gap-1.5 flex-wrap" role="group" aria-label="난이도 선택">
+            {DIFFICULTIES.map(({ id, label }) => {
+              const isSelected = difficulty === id;
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => handleDifficultyChange(id)}
+                  className={`px-3 py-1 rounded-md3-full text-xs font-medium border transition-all md3-button-motion flex items-center gap-1.5 ${
+                    isSelected
+                      ? 'bg-primary text-on-primary border-primary shadow-xs font-semibold'
+                      : 'bg-surface-container border-outline-variant/60 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high'
+                  }`}
+                  aria-pressed={isSelected}
+                >
+                  {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-on-primary" />}
+                  <span>{label}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
