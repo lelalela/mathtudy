@@ -1,109 +1,50 @@
 # Mathtudy - Project Handoff Document
 
-> **Date**: 2026-10-29  
-> **Repository**: [mathtudy](https://github.com/lelalela/mathtudy) (`main` branch)  
-> **Latest Commit**: [`346ea7e`](https://github.com/lelalela/mathtudy/commit/346ea7e) (`feat(drill): move AI tutor to post-submission and enhance systems of equations hints`)  
-> **Server Status**: `home-server:8980` (Docker container `mathtudy` running, HTTP 200 OK)
+> **Last Updated**: 2026-11-03  
+> **Repository**: [mathtudy](https://github.com/lelalela/mathtudy)  
+> **Active PR**: [#1](https://github.com/lelalela/mathtudy/pull/1) (`feat/quickwins-difficulty-and-keypad` ➔ `main`)  
+> **Commit Hash**: [`90175d4`](https://github.com/lelalela/mathtudy/commit/90175d4921d43c204c6453260435bfdb6d3b375a) (`feat(drill): add difficulty filter chips and physical keyboard bindings with extended keypad symbols`)
 
 ---
 
 ## 1. Project Overview & Core Philosophy
 
-**Mathtudy** is a 100% DB-less, Local-First, PWA-enabled math drill and learning web application built with **Next.js 16 (Turbopack)**, **React 19**, **Tailwind CSS**, and **KaTeX**.
-
-- **100% DB-less & Local-First**: No external database or server state. User progress, streaks, mastery, scratchpad status, and API keys are stored in browser `localStorage`.
-- **Algorithmic Generators**: Problems are dynamically generated on the client in sub-milliseconds using deterministic seed/unique ID algorithms (`src/lib/generators/*`).
-- **LaTeX Math Rendering**: Rendered via KaTeX (`MathRenderer.tsx`) with hydration suppression for SSR safety.
-- **Design System**: Material Design 3 (MD3) Dark Mode aesthetic.
+**Mathtudy**는 100% DB-less, Local-First, PWA 지원 성인 수학 독학 웹 애플리케이션입니다.
+- **Tech Stack**: Next.js 16 (App Router / Turbopack), React 19, TypeScript 5, Tailwind CSS v4, Material Design 3 (MD3) Dark Mode, KaTeX 0.19.1.
+- **100% DB-less & Local-First**: 서버 DB/호스팅 비용 0원. 브라우저 `localStorage`(`src/lib/storage.ts`)만으로 스트릭, 마스터리, 설정 유지.
+- **Algorithmic Generators**: `src/lib/generators/*` 기반 클라이언트 동적 무한 문제 생성.
 
 ---
 
-## 2. Recent Key Accomplishments & Context
+## 2. Recent Key Accomplishments (2026-11-03 Session)
 
-### A. Transparent Scratchpad Overlay (`src/components/ui/ScratchpadOverlay.tsx`)
-- Canvas drawing tool with Pen, Eraser, Clear, Undo, Close, and **Pointer Mode** (draw off / pass-through clicks to underlying cards).
-- **Dimmed Backdrop Customization**:
-  - Located at [ScratchpadOverlay.tsx line 124](file:///home/yjnoh/orca/projects/mathtudy/src/components/ui/ScratchpadOverlay.tsx#L124):
-    `className="fixed inset-0 z-50 bg-black/65 backdrop-blur-[2.5px] ..."`
-  - User may adjust the `bg-black/65` opacity or `backdrop-blur-[2.5px]` blur level for visibility tuning.
-- Multi-touch handling, window resize stroke scaling, and localStorage cleanup per problem.
+### A. 기획자 세션 분석 보고서 도출
+- 에듀테크 관점에서 서비스 결핍 요소(오답 복습 단절, 난이도 선택 부재, 키패드 PC 입력 미지원, 개념 진도 미체크 등) 도출.
+- P0 과제로 Quick Win 2대 과제 선정 및 기능 개발자 워크트리 배정.
 
-### B. Gemini AI Tutor (`src/components/drill/AiTutorPanel.tsx`, `src/lib/gemini.ts`)
-- **API Key Storage**: Client-side only (`localStorage.getItem('gemini_api_key')`).
-- **Model Fallback Chain**: Calls `gemini-3.5-flash-lite` first; automatically falls back to `gemini-3.8-flash` if rate-limited or unavailable.
-- **Placement & Flow (Moved Post-Submission)**:
-  - **Before submission**: Only the `[💡 힌트 보기]` button is displayed, ensuring students attempt to solve on their own.
-  - **After submission**: The `[✨ Gemini AI 과외 선생님 추가 해설 듣기]` toggle button is displayed below `StepSolution`.
-  - Default mode opens directly into `'full'` (정답 & 완벽 풀이) mode.
-
-### C. Enhanced Systems of Linear Equations Hints (`src/lib/generators/systems-and-roots.ts`)
-- Replaced generic hints with a dynamic 4-step actionable guide:
-  1. Elimination strategy (eliminate $y$ first).
-  2. Coefficient matching (exact multiplier values $mult1, mult2$ dynamically calculated).
-  3. Sign checking (whether to add or subtract equations based on coefficients).
-  4. Substitution of solved $x$ into original equation to find $y$.
-
-### D. SSR KaTeX Hydration Error Resolution
-- Added `suppressHydrationWarning` to:
-  - `src/components/ui/MathRenderer.tsx`
-  - `src/components/drill/DrillView.tsx`
-  - `src/components/drill/MultipleChoice.tsx`
-- Cleared stale Turbopack dev caches (`rm -rf .next`).
+### B. Quick Win 2대 과제 구현 완료 및 PR #1 생성
+1. **DrillView 난이도(Difficulty) 선택 UI 연동 (`src/components/drill/DrillView.tsx`)**:
+   - `easy`, `medium`, `hard` MD3 Filter Chip 토글 UI 추가.
+   - 난이도 변경 시 해당 난이도의 새 문제 즉시 생성 및 풀이 상태 리셋.
+2. **가상 키패드 PC 물리 키보드 바인딩 & 기호 확충 (`src/components/ui/MathKeypad.tsx`)**:
+   - `keydown` 이벤트 연동으로 숫자(0-9), 사칙연산 기호(+,-,*,/), 괄호, 백스페이스, 엔터(자동 제출) 입력 지원.
+   - 키패드 버튼셋에 괄호 `(`, `)` 및 미지수 `y` 버튼 추가 (5열 그리드 확장).
+   - MD3 컬러 토큰 적용 및 단축키 안내 힌트 칩 추가.
+3. **GitHub PR 및 브랜치 푸시**:
+   - 브랜치: `feat/quickwins-difficulty-and-keypad`
+   - PR: [GitHub PR #1](https://github.com/lelalela/mathtudy/pull/1)
+   - 자체 검증: `pnpm lint` 통과, `pnpm build` 통과
 
 ---
 
-## 3. Important Architecture & Code Conventions
+## 3. Next Tasks for New Developer (다음 투입 개발자 과제)
 
-Refer to [AGENTS.md](file:///home/yjnoh/orca/projects/mathtudy/AGENTS.md) and [docs/ARCHITECTURE.md](file:///home/yjnoh/orca/projects/mathtudy/docs/ARCHITECTURE.md) for full guidelines.
+다음 개발자 투입 시 진행할 추천 과제 목록입니다:
 
-1. **Deterministic Unique IDs**:
-   - Always use `getUniqueId('prefix')` instead of `Date.now()` or `Math.random()` inside generators to prevent SSR hydration mismatches.
-2. **Template Literals vs LaTeX**:
-   - Do NOT use LaTeX commands directly inside JS expressions `${...}` (e.g. `` `${u1 \times v1}` `` ❌ -> `` `(${u1} \\times ${v1})` `` ⭕).
-3. **React 19 Rule Compliance**:
-   - Avoid calling `setState` synchronously within `useEffect` (use async promise chaining or action handlers).
-   - Do not mutate refs during render.
-
----
-
-## 4. Environment & Deployment Workflow
-
-### Local Commands
-```bash
-pnpm dev       # Run local development server (http://localhost:3000)
-pnpm lint      # ESLint 9 verification (0 errors required)
-pnpm build     # Next.js 16 production build check
-```
-
-### Production Deployment (Home Server)
-- **Host**: `home-server`
-- **Path**: `/home/lelalela/mathtudy`
-- **Port**: `8980` (mapped to container port 3000)
-- **Deployment Command**:
-  ```bash
-  ssh home-server "cd /home/lelalela/mathtudy && git pull origin main && docker compose up -d --build"
-  ```
-- **Health Check**:
-  ```bash
-  ssh home-server "curl -I http://localhost:8980"
-  ```
-
----
-
-## 5. Next Session Candidates / Ongoing Tasks
-
-1. **Scratchpad Dimming & Gesture Polish**:
-   - Allow user to fine-tune `bg-black/65` and `backdrop-blur-[2.5px]` in `ScratchpadOverlay.tsx` if desired.
-   - Test touch drawing on mobile/tablet devices.
-2. **Additional Math Topic Hints & Explanations**:
-   - Apply the multi-tier hint structure ($strategy \to coefficients \to operation \to substitution$) to other complex generators (e.g., quadratic equations, complex numbers, geometric proofs).
-3. **PWA Offline Asset Caching**:
-   - Verify Service Worker / Manifest caching for offline font & KaTeX math rendering.
-
----
-
-## 6. Suggested Skills
-
-The next agent should consider invoking the following skills depending on the task:
-- **`frontend-design`**: Use when modifying UI aesthetics, layout refinements, color tokens (MD3), or scratchpad control toolbar styling.
-- **`web-design-guidelines`**: Use when reviewing accessibility, touch ergonomics on mobile devices, or contrast ratios in dark mode.
+1. **[P0] PR #1 머지 후 메인 브랜치 동기화 (`git pull origin main`)**
+2. **[P1] 오답 노트 (Review Notebook) & 스냅샷 저장 아키텍처 구현**:
+   - 틀린 문제 발생 시 당시의 수식, 선택지, 해설 스냅샷을 `localStorage`에 영구 보존.
+   - 복습 전용 뷰/모달 또는 탭 구현.
+3. **[P1] 개념서(LessonReader) 읽음 완료 체크 및 진도율 반영**:
+   - 개념 완독 시 `storage.ts`에 기록하여 커리큘럼 로드맵 상의 진도율 시각화.
+4. **[P1] 객관식 터치 실수 방지 인터랙션** (선택 후 제출 방식).

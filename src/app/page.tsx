@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Suspense, useMemo } from 'react';
+import React, { Suspense, useMemo, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useUserProgress } from '@/lib/storage';
 import { TopicConcept, CURRICULUM_TOPICS } from '@/lib/curriculum-data';
@@ -35,6 +35,11 @@ function HomePageContent() {
   const tabParam = searchParams.get('tab') || 'roadmap';
   const idParam = searchParams.get('id');
   const modalParam = searchParams.get('modal');
+
+  // Reset scroll to top whenever tab or content id changes (e.g. entering a lesson)
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [tabParam, idParam]);
 
   const view: 'roadmap' | 'lesson' | 'drill' | 'stats' = 
     ['roadmap', 'lesson', 'drill', 'stats'].includes(tabParam)
